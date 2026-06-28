@@ -1,0 +1,31 @@
+---
+description: Frontend standards — official docs, custom CSS, API reference
+alwaysApply: true
+---
+
+# Frontend standards
+
+## Documentation first
+
+When adding a new feature or choosing an implementation approach, read the **official documentation** for the relevant technology (Svelte, SvelteKit, MDN for HTML/CSS/JS) and follow current best practices.
+
+## Design constraints
+
+- **No third-party CSS frameworks** (no Tailwind, Bootstrap, etc.).
+- **No third-party component libraries** (no shadcn, MUI, etc.).
+- Keep the design **simple and custom** — plain CSS, minimal layout, clear typography.
+
+## API contract
+
+Backend API is documented at `/home/devl0pr/entertainment/onepoint/docs` (`openapi.yaml`).
+
+- Match request/response shapes to the OpenAPI spec.
+- Default API base URL: `http://localhost:8088`.
+- Auth: Bearer token from login; see OpenAPI `securitySchemes.bearerAuth`.
+
+## Code style
+
+- **JavaScript only** — no TypeScript.
+- Svelte 5 runes in new components.
+- API calls through `src/lib/api/client.js`.
+- Accessible forms: `<label>`, semantic HTML, visible error messages.
