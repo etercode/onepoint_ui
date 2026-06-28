@@ -22,7 +22,7 @@ import { getAccessToken } from '$lib/auth/session';
 	initialized = $state(false);
 
 	get isAuthenticated() {
-		return getAccessToken() !== null;
+		return browser && getAccessToken() !== null;
 	}
 
 	async init() {

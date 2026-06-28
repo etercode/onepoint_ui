@@ -4,12 +4,14 @@
 	import { onMount } from 'svelte';
 	import { auth } from '$lib/auth/auth.svelte';
 	import { appearance } from '$lib/appearance/store.svelte';
+	import { cart } from '$lib/cart/store.svelte';
 
 	let { children } = $props();
 
 	onMount(() => {
 		appearance.init();
 		auth.init();
+		cart.init();
 	});
 </script>
 

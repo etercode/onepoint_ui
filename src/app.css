@@ -24,6 +24,19 @@
 	--max-width: 420px;
 	--feed-width: 37.5rem;
 	--sidebar-width: 17rem;
+	/* Store (mp) defaults — overridden by appearance.apply() */
+	--mp-bg: #faf8f5;
+	--mp-surface: #ffffff;
+	--mp-text: #1a1614;
+	--mp-muted: #6b6560;
+	--mp-border: #e8e2db;
+	--mp-primary: #c45d2c;
+	--mp-primary-hover: #a84d24;
+	--mp-primary-soft: rgb(196 93 44 / 0.14);
+	--mp-accent: #2d6a4f;
+	--mp-accent-soft: #e8f5ee;
+	--mp-shadow: 0 2px 8px rgb(26 22 20 / 0.06);
+	--mp-shadow-lg: 0 16px 48px rgb(26 22 20 / 0.1);
 }
 
 *,

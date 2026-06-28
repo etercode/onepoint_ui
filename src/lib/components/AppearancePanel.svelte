@@ -6,9 +6,9 @@
 
 	/** @type {Array<{ id: import('$lib/appearance/themes.js').ThemeId, label: string }>} */
 	const themeOptions = [
-		{ id: 'light', label: 'Light' },
-		{ id: 'dark', label: 'Dark' },
-		{ id: 'dim', label: 'Dim' }
+		{ id: 'light', label: 'Açıq' },
+		{ id: 'dark', label: 'Tünd' },
+		{ id: 'dim', label: 'Yumuşaq tünd' }
 	];
 
 	async function save() {
@@ -19,35 +19,35 @@
 	}
 </script>
 
-<section class="panel">
-	<h2>Theme</h2>
-	<p class="panel-desc">Choose a base look for the app.</p>
+<section class="mp-settings-panel">
+	<h2>Tema</h2>
+	<p class="mp-settings-desc">Tətbiqin əsas görünüşünü seçin.</p>
 
-	<div class="option-grid">
+	<div class="mp-option-grid">
 		{#each themeOptions as option}
 			<button
 				type="button"
-				class="option-card"
-				class:option-card-active={appearance.prefs.theme === option.id}
+				class="mp-option-card"
+				class:mp-option-card-active={appearance.prefs.theme === option.id}
 				onclick={() => appearance.set({ theme: option.id })}
 			>
-				<span class="theme-swatch theme-swatch-{option.id}"></span>
+				<span class="mp-theme-swatch mp-theme-swatch-{option.id}"></span>
 				<span>{option.label}</span>
 			</button>
 		{/each}
 	</div>
 </section>
 
-<section class="panel">
-	<h2>Accent color</h2>
-	<p class="panel-desc">Links, buttons, and highlights.</p>
+<section class="mp-settings-panel">
+	<h2>Vurğu rəngi</h2>
+	<p class="mp-settings-desc">Düymələr və seçilmiş elementlər üçün.</p>
 
-	<div class="accent-grid">
+	<div class="mp-accent-grid">
 		{#each Object.entries(accents) as [id, accent]}
 			<button
 				type="button"
-				class="accent-swatch"
-				class:accent-swatch-active={appearance.prefs.accent === id}
+				class="mp-accent-swatch"
+				class:mp-accent-swatch-active={appearance.prefs.accent === id}
 				style="--swatch-color: {accent.primary}"
 				title={accent.label}
 				aria-label={accent.label}
@@ -57,16 +57,16 @@
 	</div>
 </section>
 
-<section class="panel">
-	<h2>Font</h2>
-	<p class="panel-desc">Body text style across the app.</p>
+<section class="mp-settings-panel">
+	<h2>Şrift</h2>
+	<p class="mp-settings-desc">Mətn üslubu.</p>
 
-	<div class="option-row">
+	<div class="mp-chip-row">
 		{#each Object.entries(fontFamilies) as [id, font]}
 			<button
 				type="button"
-				class="chip-btn"
-				class:chip-btn-active={appearance.prefs.fontFamily === id}
+				class="mp-chip-btn"
+				class:mp-chip-btn-active={appearance.prefs.fontFamily === id}
 				onclick={() => appearance.set({ fontFamily: /** @type {import('$lib/appearance/themes.js').FontFamilyId} */ (id) })}
 			>
 				{font.label}
@@ -75,16 +75,16 @@
 	</div>
 </section>
 
-<section class="panel">
-	<h2>Text size</h2>
-	<p class="panel-desc">Comfort reading scale.</p>
+<section class="mp-settings-panel">
+	<h2>Mətn ölçüsü</h2>
+	<p class="mp-settings-desc">Oxuma rahatlığı üçün.</p>
 
-	<div class="option-row">
+	<div class="mp-chip-row">
 		{#each Object.entries(fontSizes) as [id, size]}
 			<button
 				type="button"
-				class="chip-btn"
-				class:chip-btn-active={appearance.prefs.fontSize === id}
+				class="mp-chip-btn"
+				class:mp-chip-btn-active={appearance.prefs.fontSize === id}
 				onclick={() => appearance.set({ fontSize: /** @type {import('$lib/appearance/themes.js').FontSizeId} */ (id) })}
 			>
 				{size.label}
@@ -93,12 +93,12 @@
 	</div>
 </section>
 
-<div class="appearance-save">
+<div class="mp-settings-save">
 	{#if saved}
-		<span class="save-note" role="status">Appearance saved</span>
+		<span class="mp-alert mp-alert-success" role="status" style="display: inline-block; margin-right: 0.75rem;">Saxlanıldı</span>
 	{/if}
-	<button type="button" class="btn" disabled={appearance.saving} onclick={save}>
-		{appearance.saving ? 'Saving…' : 'Save appearance'}
+	<button type="button" class="mp-btn-primary" disabled={appearance.saving} onclick={save}>
+		{appearance.saving ? 'Saxlanılır…' : 'Görünüşü saxla'}
 	</button>
-	<p class="panel-desc">Saved in this browser now. Syncs to your account when the preferences API is live.</p>
+	<p class="mp-settings-desc" style="margin-top: 0.75rem;">Bu brauzerdə saxlanılır. Hesab sinxronizasiyası tezliklə.</p>
 </div>

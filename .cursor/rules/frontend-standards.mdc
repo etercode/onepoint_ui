@@ -1,36 +1,33 @@
 ---
-description: Frontend standards — official docs, custom CSS, API reference, news UX
+description: Frontend standards — single-company store UX, Azerbaijani UI, custom CSS
 alwaysApply: true
 ---
 
 # Frontend standards
 
-## Documentation first
+## Product
 
-Read **official documentation** (Svelte, SvelteKit, MDN) when adding features.
+onepoint is **one furniture company's online store** in Azerbaijan. Not a multi-seller marketplace. Not a news app.
 
-## Design constraints
+- Homepage `/` is **public** catalog
+- UI copy in **Azerbaijani**; routes and code in **English**
+- Original layout — never copy embawood.az (or other sites) UI; only use as content reference
+- No user selling / listings — customers browse and buy from onepoint only
 
-- **No third-party CSS frameworks** or **component libraries**.
-- Simple, custom CSS — readable, accessible.
+## Design
 
-## Product UX
+- No third-party CSS or component libraries
+- Premium store feel (catalog, collections, trust badges, consultation CTA)
+- `src/lib/styles/marketplace.css` for store pages
 
-onepoint is a **news aggregator** (multi-source feed). UI is **feed-first**.
+## Header
 
-- **Home** (`/`) = article feed, not a dashboard.
-- **Header** = logo + user menu only. **No nav menu** in the header.
-- **User menu** (top right): username → dropdown → Settings, Log out.
-- **Settings** (`/settings`) = account only. Not under feed or dashboard.
+Logo + search + user menu (or login/register). **No nav menu tabs.** No "Sat" button.
 
-## API contract
+## API
 
 OpenAPI: `/home/devl0pr/entertainment/onepoint/docs/openapi.yaml`
 
-Default API base: `http://localhost:8088`
+## Code
 
-## Code style
-
-- JavaScript only, Svelte 5 runes.
-- API calls via `src/lib/api/client.js`.
-- Accessible forms and menus (`aria-expanded`, `role="menu"`).
+JavaScript only, Svelte 5 runes, `src/lib/api/client.js`

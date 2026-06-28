@@ -8,6 +8,7 @@
 	import PasswordInput from '$lib/components/PasswordInput.svelte';
 	import ProfilePhotoEditor from '$lib/components/ProfilePhotoEditor.svelte';
 	import UsernameField from '$lib/components/UsernameField.svelte';
+	import Breadcrumbs from '$lib/components/marketplace/Breadcrumbs.svelte';
 
 	/** @type {'account' | 'password' | 'appearance'} */
 	let tab = $state('account');
@@ -40,9 +41,9 @@
 	const originalUsername = $derived(auth.user?.username ?? '');
 
 	const tabs = [
-		{ id: 'account', label: 'Account' },
-		{ id: 'password', label: 'Password' },
-		{ id: 'appearance', label: 'Appearance' }
+		{ id: 'account', label: 'Hesab' },
+		{ id: 'password', label: 'Şifrə' },
+		{ id: 'appearance', label: 'Görünüş' }
 	];
 
 	onMount(() => {
@@ -81,7 +82,7 @@
 		profileSuccess = '';
 
 		if (usernameField && !(await usernameField.validate())) {
-			profileError = 'Choose an available username';
+			profileError = 'Mövcud istifadəçi adı seçin';
 			return;
 		}
 
@@ -98,9 +99,9 @@
 				description: description.trim() || null
 			});
 			auth.user = user;
-			profileSuccess = 'Profile updated';
+			profileSuccess = 'Profil yeniləndi';
 		} catch (err) {
-			profileError = err instanceof ApiClientError ? err.message : 'Update failed';
+			profileError = err instanceof ApiClientError ? err.message : 'Yeniləmə alınmadı';
 		} finally {
 			profileSubmitting = false;
 		}
@@ -113,7 +114,7 @@
 		passwordSuccess = '';
 
 		if (newPassword !== confirmPassword) {
-			passwordError = 'New passwords do not match';
+			passwordError = 'Yeni şifrələr uyğun gəlmir';
 			return;
 		}
 
@@ -123,9 +124,9 @@
 			currentPassword = '';
 			newPassword = '';
 			confirmPassword = '';
-			passwordSuccess = 'Password changed';
+			passwordSuccess = 'Şifrə dəyişdirildi';
 		} catch (err) {
-			passwordError = err instanceof ApiClientError ? err.message : 'Password change failed';
+			passwordError = err instanceof ApiClientError ? err.message : 'Şifrə dəyişdirilmədi';
 		} finally {
 			passwordSubmitting = false;
 		}
@@ -145,19 +146,20 @@
 </script>
 
 <svelte:head>
-	<title>Settings — onepoint</title>
+	<title>Hesab parametrləri — onepoint</title>
 </svelte:head>
 
-<div class="settings-page">
-	<h1 class="page-title">Settings</h1>
+<div class="mp-settings">
+	<Breadcrumbs items={[{ label: 'Ana səhifə', href: '/' }, { label: 'Hesab parametrləri' }]} />
+	<h1 class="mp-settings-title">Hesab parametrləri</h1>
 
-	<div class="settings-layout">
-		<nav class="settings-nav" aria-label="Settings sections">
+	<div class="mp-settings-layout">
+		<nav class="mp-settings-nav" aria-label="Parametr bölmələri">
 			{#each tabs as item}
 				<button
 					type="button"
-					class="settings-nav-item"
-					class:settings-nav-item-active={tab === item.id}
+					class="mp-settings-nav-item"
+					class:mp-settings-nav-item-active={tab === item.id}
 					onclick={() => selectTab(/** @type {'account' | 'password' | 'appearance'} */ (item.id))}
 				>
 					{item.label}
@@ -165,15 +167,15 @@
 			{/each}
 		</nav>
 
-		<div class="settings-content">
+		<div class="mp-settings-content">
 			{#if tab === 'account'}
-				<section class="panel panel-flat">
-					<h2>Profile photo</h2>
+				<section class="mp-settings-panel">
+					<h2>Profil şəkli</h2>
 					{#if photoMessage}
 						<div
-							class="alert"
-							class:alert-error={photoMessageType === 'error'}
-							class:alert-success={photoMessageType === 'success'}
+							class="mp-alert"
+							class:mp-alert-error={photoMessageType === 'error'}
+							class:mp-alert-success={photoMessageType === 'success'}
 							role="status"
 						>
 							{photoMessage}
@@ -186,23 +188,21 @@
 					/>
 				</section>
 
-				<section class="panel panel-flat">
-					<h2>Profile information</h2>
-					<p class="panel-desc">Email cannot be changed here.</p>
+				<section class="mp-settings-panel">
+					<h2>Profil məlumatları</h2>
+					<p class="mp-settings-desc">E-poçt burada dəyişdirilə bilməz.</p>
 
 					{#if profileError}
-						<div class="alert alert-error" role="alert">{profileError}</div>
+						<div class="mp-alert mp-alert-error" role="alert">{profileError}</div>
 					{/if}
 					{#if profileSuccess}
-						<div class="alert alert-success" role="status">{profileSuccess}</div>
+						<div class="mp-alert mp-alert-success" role="status">{profileSuccess}</div>
 					{/if}
 
-					<form onsubmit={handleProfileSubmit}>
+					<form class="mp-form" onsubmit={handleProfileSubmit}>
 						{#if auth.user}
-							<div class="form-field">
-								<label for="email">Email</label>
-								<input id="email" type="email" value={auth.user.email} disabled />
-							</div>
+							<label for="email">E-poçt</label>
+							<input id="email" type="email" value={auth.user.email} disabled />
 						{/if}
 
 						<UsernameField
@@ -213,75 +213,75 @@
 							required
 						/>
 
-						<div class="form-row">
-							<div class="form-field">
-								<label for="name">First name</label>
+						<div class="mp-form-row">
+							<label for="name">
+								Ad
 								<input id="name" type="text" name="name" required bind:value={name} />
-							</div>
-							<div class="form-field">
-								<label for="lastname">Last name</label>
+							</label>
+							<label for="lastname">
+								Soyad
 								<input id="lastname" type="text" name="lastname" required bind:value={lastname} />
-							</div>
+							</label>
 						</div>
 
-						<div class="form-row">
-							<div class="form-field">
-								<label for="timezone">Timezone <span class="optional">(optional)</span></label>
-								<input id="timezone" type="text" name="timezone" placeholder="Europe/Istanbul" maxlength="64" bind:value={timezone} />
-							</div>
-							<div class="form-field">
-								<label for="language">Language <span class="optional">(optional)</span></label>
-								<input id="language" type="text" name="language" placeholder="en" maxlength="12" bind:value={language} />
-							</div>
+						<div class="mp-form-row">
+							<label for="timezone">
+								Saat qurşağı <span class="mp-optional">(istəyə bağlı)</span>
+								<input id="timezone" type="text" name="timezone" placeholder="Asia/Baku" maxlength="64" bind:value={timezone} />
+							</label>
+							<label for="language">
+								Dil <span class="mp-optional">(istəyə bağlı)</span>
+								<input id="language" type="text" name="language" placeholder="az" maxlength="12" bind:value={language} />
+							</label>
 						</div>
 
-						<div class="form-field">
-							<label for="birthday">Birthday <span class="optional">(optional)</span></label>
+						<label for="birthday">
+							Doğum tarixi <span class="mp-optional">(istəyə bağlı)</span>
 							<input id="birthday" type="date" name="birthday" bind:value={birthday} />
-						</div>
+						</label>
 
-						<div class="form-field">
-							<label for="statusText">Status <span class="optional">(optional)</span></label>
+						<label for="statusText">
+							Status <span class="mp-optional">(istəyə bağlı)</span>
 							<input id="statusText" type="text" name="statusText" maxlength="255" bind:value={statusText} />
-						</div>
+						</label>
 
-						<div class="form-field">
-							<label for="description">Description <span class="optional">(optional)</span></label>
+						<label for="description">
+							Təsvir <span class="mp-optional">(istəyə bağlı)</span>
 							<textarea id="description" name="description" bind:value={description}></textarea>
-						</div>
+						</label>
 
-						<button type="submit" class="btn" disabled={profileSubmitting}>
-							{profileSubmitting ? 'Saving…' : 'Save changes'}
+						<button type="submit" class="mp-btn-primary" disabled={profileSubmitting}>
+							{profileSubmitting ? 'Saxlanılır…' : 'Dəyişiklikləri saxla'}
 						</button>
 					</form>
 				</section>
 			{:else if tab === 'password'}
-				<section class="panel panel-flat">
-					<h2>Password</h2>
-					<p class="panel-desc">Other sessions are signed out when you change your password.</p>
+				<section class="mp-settings-panel">
+					<h2>Şifrə</h2>
+					<p class="mp-settings-desc">Şifrəni dəyişdikdə digər sessiyalar bağlanır.</p>
 
 					{#if passwordError}
-						<div class="alert alert-error" role="alert">{passwordError}</div>
+						<div class="mp-alert mp-alert-error" role="alert">{passwordError}</div>
 					{/if}
 					{#if passwordSuccess}
-						<div class="alert alert-success" role="status">{passwordSuccess}</div>
+						<div class="mp-alert mp-alert-success" role="status">{passwordSuccess}</div>
 					{/if}
 
-					<form onsubmit={handlePasswordSubmit}>
-						<div class="form-field">
-							<label for="currentPassword">Current password</label>
+					<form class="mp-form" onsubmit={handlePasswordSubmit}>
+						<label for="currentPassword">
+							Cari şifrə
 							<PasswordInput id="currentPassword" name="currentPassword" autocomplete="current-password" required bind:value={currentPassword} />
-						</div>
-						<div class="form-field">
-							<label for="newPassword">New password <span class="optional">(min 8 characters)</span></label>
+						</label>
+						<label for="newPassword">
+							Yeni şifrə <span class="mp-optional">(min. 8 simvol)</span>
 							<PasswordInput id="newPassword" name="newPassword" autocomplete="new-password" required minlength={8} bind:value={newPassword} />
-						</div>
-						<div class="form-field">
-							<label for="confirmPassword">Confirm new password</label>
+						</label>
+						<label for="confirmPassword">
+							Yeni şifrəni təsdiqlə
 							<PasswordInput id="confirmPassword" name="confirmPassword" autocomplete="new-password" required minlength={8} bind:value={confirmPassword} />
-						</div>
-						<button type="submit" class="btn" disabled={passwordSubmitting}>
-							{passwordSubmitting ? 'Changing…' : 'Change password'}
+						</label>
+						<button type="submit" class="mp-btn-primary" disabled={passwordSubmitting}>
+							{passwordSubmitting ? 'Dəyişdirilir…' : 'Şifrəni dəyiş'}
 						</button>
 					</form>
 				</section>

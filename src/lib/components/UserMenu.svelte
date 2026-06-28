@@ -9,7 +9,7 @@
 	let menuEl = $state(/** @type {HTMLDivElement | undefined} */ (undefined));
 
 	const photoUrl = $derived(resolveApiUrl(auth.user?.profilePhotoUrl));
-	const displayName = $derived(auth.user?.name ?? auth.user?.username ?? 'Account');
+	const displayName = $derived(auth.user?.name ?? auth.user?.username ?? 'Hesab');
 
 	function toggle() {
 		open = !open;
@@ -46,154 +46,55 @@
 <svelte:window onclick={handleWindowClick} onkeydown={handleWindowKeydown} />
 
 {#if auth.user}
-	<div class="user-menu" bind:this={menuEl}>
+	<div class="mp-user-menu" bind:this={menuEl}>
 		<button
 			type="button"
-			class="user-menu-trigger"
+			class="mp-user-menu-trigger"
 			onclick={toggle}
 			aria-expanded={open}
 			aria-haspopup="menu"
 		>
-			<span class="user-menu-avatar">
+			<span class="mp-user-menu-avatar">
 				{#if photoUrl}
 					<img src={photoUrl} alt="" />
 				{:else}
-					<span class="avatar-placeholder">{displayName.charAt(0)}</span>
+					<span class="mp-user-menu-initial">{displayName.charAt(0)}</span>
 				{/if}
 			</span>
-			<span class="user-menu-name">{displayName}</span>
-			<svg class="user-menu-chevron" class:open xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+			<span class="mp-user-menu-name">{displayName}</span>
+			<svg class="mp-user-menu-chevron" class:open xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
 				<polyline points="6 9 12 15 18 9" />
 			</svg>
 		</button>
 
 		{#if open}
-			<div class="user-menu-dropdown" role="menu">
-				<p class="user-menu-meta">@{auth.user.username}</p>
-				<a href="/settings" class="user-menu-item" role="menuitem" onclick={(e) => { e.preventDefault(); goSettings(); }}>
-					Settings
+			<div class="mp-user-menu-dropdown" role="menu">
+				<div class="mp-user-menu-header">
+					<span class="mp-user-menu-avatar mp-user-menu-avatar-lg">
+						{#if photoUrl}
+							<img src={photoUrl} alt="" />
+						{:else}
+							<span class="mp-user-menu-initial">{displayName.charAt(0)}</span>
+						{/if}
+					</span>
+					<div>
+						<strong>{displayName}</strong>
+						<p>@{auth.user.username}</p>
+					</div>
+				</div>
+				<a href="/settings" class="mp-user-menu-item" role="menuitem" onclick={(e) => { e.preventDefault(); goSettings(); }}>
+					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+					Hesab parametrləri
 				</a>
-				<button type="button" class="user-menu-item user-menu-item-danger" role="menuitem" onclick={logout}>
-					Log out
+				<a href="/cart" class="mp-user-menu-item" role="menuitem" onclick={close}>
+					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+					Səbətim
+				</a>
+				<button type="button" class="mp-user-menu-item mp-user-menu-item-danger" role="menuitem" onclick={logout}>
+					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+					Çıxış
 				</button>
 			</div>
 		{/if}
 	</div>
 {/if}
-
-<style>
-	.user-menu {
-		position: relative;
-	}
-
-	.user-menu-trigger {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-		padding: 0.25rem 0.5rem 0.25rem 0.25rem;
-		border: 1px solid var(--color-border);
-		border-radius: 999px;
-		background: var(--color-surface);
-		color: var(--color-text);
-	}
-
-	.user-menu-trigger:hover {
-		background: var(--color-bg);
-	}
-
-	.user-menu-trigger:focus-visible {
-		outline: 2px solid var(--color-primary);
-		outline-offset: 2px;
-	}
-
-	.user-menu-avatar {
-		width: 2rem;
-		height: 2rem;
-		border-radius: 50%;
-		overflow: hidden;
-		background: var(--color-bg);
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		flex-shrink: 0;
-	}
-
-	.user-menu-avatar img {
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
-	}
-
-	.user-menu-avatar .avatar-placeholder {
-		font-size: 0.875rem;
-		font-weight: 600;
-		color: var(--color-muted);
-	}
-
-	.user-menu-name {
-		font-size: 0.875rem;
-		font-weight: 500;
-		max-width: 8rem;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
-	}
-
-	.user-menu-chevron {
-		color: var(--color-muted);
-		transition: transform 0.15s ease;
-	}
-
-	.user-menu-chevron.open {
-		transform: rotate(180deg);
-	}
-
-	.user-menu-dropdown {
-		position: absolute;
-		top: calc(100% + 0.5rem);
-		right: 0;
-		min-width: 11rem;
-		padding: 0.375rem;
-		background: var(--color-surface);
-		border: 1px solid var(--color-border);
-		border-radius: var(--radius);
-		box-shadow: var(--shadow-md);
-		z-index: 50;
-	}
-
-	.user-menu-meta {
-		margin: 0;
-		padding: 0.5rem 0.75rem;
-		font-size: 0.75rem;
-		color: var(--color-muted);
-		border-bottom: 1px solid var(--color-border);
-		margin-bottom: 0.25rem;
-	}
-
-	.user-menu-item {
-		display: block;
-		width: 100%;
-		padding: 0.5rem 0.75rem;
-		border: none;
-		border-radius: calc(var(--radius) - 2px);
-		background: transparent;
-		color: var(--color-text);
-		font-size: 0.875rem;
-		text-align: left;
-		text-decoration: none;
-	}
-
-	.user-menu-item:hover {
-		background: var(--color-bg);
-	}
-
-	.user-menu-item-danger {
-		color: var(--color-danger);
-	}
-
-	@media (max-width: 480px) {
-		.user-menu-name {
-			display: none;
-		}
-	}
-</style>

@@ -1,5 +1,12 @@
 import { browser } from '$app/environment';
-import { accents, defaultPreferences, fontFamilies, fontSizes, themes } from '$lib/appearance/themes';
+import {
+	accents,
+	defaultPreferences,
+	fontFamilies,
+	fontSizes,
+	mpThemes,
+	themes
+} from '$lib/appearance/themes';
 import { getPreferences, updatePreferences } from '$lib/api/client';
 
 const STORAGE_KEY = 'onepoint_appearance';
@@ -28,6 +35,7 @@ class AppearanceState {
 	}
 
 	saveLocal() {
+		if (!browser) return;
 		localStorage.setItem(STORAGE_KEY, JSON.stringify(this.prefs));
 	}
 
@@ -35,7 +43,8 @@ class AppearanceState {
 		if (!browser) return;
 		const root = document.documentElement;
 		const theme = themes[this.prefs.theme] ?? themes.light;
-		const accent = accents[this.prefs.accent] ?? accents.blue;
+		const mpTheme = mpThemes[this.prefs.theme] ?? mpThemes.light;
+		const accent = accents[this.prefs.accent] ?? accents.terracotta;
 		const font = fontFamilies[this.prefs.fontFamily] ?? fontFamilies.system;
 		const size = fontSizes[this.prefs.fontSize] ?? fontSizes.md;
 
@@ -48,9 +57,16 @@ class AppearanceState {
 			root.style.setProperty(key, value);
 		}
 
+		for (const [key, value] of Object.entries(mpTheme)) {
+			root.style.setProperty(key, value);
+		}
+
 		root.style.setProperty('--color-primary', accent.primary);
 		root.style.setProperty('--color-primary-hover', accent.hover);
 		root.style.setProperty('--color-accent', accent.accent);
+		root.style.setProperty('--mp-primary', accent.primary);
+		root.style.setProperty('--mp-primary-hover', accent.hover);
+		root.style.setProperty('--mp-primary-soft', accent.accent);
 		root.style.setProperty('--font', font.stack);
 		root.style.setProperty('--font-headline', font.headline);
 		root.style.setProperty('--font-size-base', size.base);

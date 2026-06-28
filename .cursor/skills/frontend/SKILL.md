@@ -1,86 +1,85 @@
 ---
 name: frontend
 description: >-
-  Builds onepoint UI — a news aggregation app — with HTML, CSS, JavaScript,
-  Svelte 5, SvelteKit, and REST API integration. Use when editing frontend
-  code, Svelte components, routes, styling, or API client calls.
+  Builds onepoint — premium single-company furniture store UI for Azerbaijan —
+  with HTML, CSS, JavaScript, Svelte 5, SvelteKit, and REST API. Use when editing
+  frontend code, catalog pages, components, or API client calls.
 ---
 
-# Frontend (onepoint UI)
+# Frontend (onepoint)
 
 ## Product direction
 
-**onepoint** is a news aggregator: crawl articles from multiple sources, expose them via APIs, let users scan a unified feed.
+**onepoint** is a **single furniture company's online store** for Azerbaijan (premium catalog / e-commerce feel — NOT a multi-seller marketplace).
 
-Design for **scanning and reading**, not admin dashboards.
+- Only onepoint sells furniture — no user listings, no "Sat" / sell CTAs
+- Homepage is **public** at `/`
+- Realistic AZ content; placeholder product data from market research (e.g. embawood.az names/prices/images only — never copy their layout)
+- All user-facing UI text in **Azerbaijani**
+- Routes, file names, identifiers, and code comments in **English**
 
 ## Stack
 
-| Layer | Technology | Official docs |
-|-------|------------|---------------|
-| Markup | HTML | https://developer.mozilla.org/en-US/docs/Web/HTML |
-| Styling | Custom CSS (no UI/CSS libraries) | https://developer.mozilla.org/en-US/docs/Web/CSS |
-| Logic | JavaScript | https://developer.mozilla.org/en-US/docs/Web/JavaScript |
-| Components | Svelte 5 (runes) | https://svelte.dev/docs/svelte/overview |
-| Framework | SvelteKit | https://svelte.dev/docs/kit/introduction |
-| Backend | REST API | See project API reference below |
+HTML, CSS, JavaScript, Svelte 5 runes, SvelteKit. No third-party CSS/component libraries.
 
-## API reference
+API: `/home/devl0pr/entertainment/onepoint/docs/openapi.yaml`
 
-Backend OpenAPI spec: `/home/devl0pr/entertainment/onepoint/docs/openapi.yaml`
+## UX principles
 
-Local server: `http://localhost:8088`
-
-Before adding endpoints or changing request/response shapes, read the OpenAPI spec.
-
-## UX principles (news aggregator)
-
-1. **Feed-first** — Home (`/`) is a chronological article list. Optimized for headline scanning (~680px column, source + time + excerpt).
-2. **Minimal chrome** — Sticky header: logo + **user menu only**. No top nav links (no Dashboard / Settings tabs).
-3. **Account via user menu** — Click username (top right) → dropdown → Settings, Log out. Standard web pattern.
-4. **Settings is separate** — `/settings` for profile/password/photo only. Not nested under feed or "dashboard".
-5. **External articles** — Cards link out to originals unless a dedicated reader view is added later.
-6. **Filters when data exists** — Source chips, saved items, search — add when crawler APIs ship; use disabled placeholders until then.
-7. **Future routes** (when APIs exist): `/sources`, `/saved`, `/article/[id]` — each top-level, not under feed.
+1. **Store-first** — browse catalog, search, categories, collections, company benefits
+2. **Public homepage** — `/` does not require login
+3. **Header** — logo, search, login/register OR user menu dropdown (Settings, Log out)
+4. **No header nav tabs** — account via user menu only
+5. **Settings** — `/settings` (auth required): Account, Password, Appearance
+6. **Product cards** show price, collection, stock, delivery, warranty — no seller info
 
 ## Routing
 
 | Route | Purpose |
 |-------|---------|
-| `/login`, `/register` | Public auth |
-| `/` | Main news feed (authenticated) |
-| `/settings` | Account management |
+| `/` | Store homepage (public) |
+| `/catalog` | Full product catalog |
+| `/category/[slug]` | Category listing |
+| `/collection/[slug]` | Collection listing |
+| `/product/[id]` | Product detail |
+| `/search` | Search (`?q=`) |
+| `/about`, `/stores`, `/delivery`, `/inspirations`, `/consultation` | Info pages |
+| `/login`, `/register` | Auth (customers) |
+| `/settings` | Account (auth required) |
+| `/admin` | Admin app (separate layout, auth required) |
+| `/admin/login` | Admin login |
 
-Use `(app)/+layout.svelte` for authenticated shell. Route groups do not appear in the URL.
+## Admin app
 
-**Do not** put account settings under `/dashboard/*` or add header nav menus.
+Separate **command-center** UI at `/admin` — dark sidebar, indigo accent, data-dense tables. Not the store design.
 
-## Conventions
+| Route | Purpose |
+|-------|---------|
+| `/admin` | Dashboard |
+| `/admin/products` | Product catalog management |
+| `/admin/orders` | Orders |
+| `/admin/customers` | Customers |
+| `/admin/consultations` | Consultation requests (from store form) |
+| `/admin/collections`, `/admin/categories` | Content structure |
+| `/admin/analytics` | Analytics |
+| `/admin/settings` | Admin settings |
 
-- **JavaScript only** — no TypeScript.
-- **No third-party CSS or component libraries.**
-- **Simple, custom design** — readable typography, clear hierarchy.
-- **API client** — `src/lib/api/client.js`.
-- **Auth** — Bearer token; see OpenAPI auth section.
+- Access: `VITE_ADMIN_EMAILS` (comma-separated). Empty = any authenticated user (dev only).
+- Styles: `src/lib/styles/admin.css`
+- Components: `src/lib/components/admin/`
 
 ## File layout
 
 ```
-src/
-  lib/
-    api/client.js
-    auth/
-    components/       # UserMenu, PasswordInput, UsernameField, …
-  routes/
-    login/
-    register/
-    (app)/
-      +layout.svelte  # header + user menu
-      +page.svelte    # feed
-      settings/
+src/lib/data/marketplace.js
+src/lib/components/marketplace/
+src/lib/styles/marketplace.css
+src/routes/(store)/
+src/routes/(admin)/admin/
+src/routes/settings/
 ```
 
-## SvelteKit patterns
+## SvelteKit
 
-- Guard auth in `(app)/+layout.svelte` with `browser` check.
-- Env: `VITE_API_URL` (default `http://localhost:8088`).
+- `settings/+layout.svelte` — auth guard + MarketplaceHeader
+- Env: `VITE_API_URL`
