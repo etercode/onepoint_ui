@@ -17,7 +17,7 @@
 
 		try {
 			await auth.login(email, password);
-			goto('/dashboard');
+			goto('/');
 		} catch (err) {
 			if (err instanceof ApiClientError) {
 				error = err.message;

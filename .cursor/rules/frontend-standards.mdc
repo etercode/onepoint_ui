@@ -1,5 +1,5 @@
 ---
-description: Frontend standards — official docs, custom CSS, API reference
+description: Frontend standards — official docs, custom CSS, API reference, news UX
 alwaysApply: true
 ---
 
@@ -7,25 +7,30 @@ alwaysApply: true
 
 ## Documentation first
 
-When adding a new feature or choosing an implementation approach, read the **official documentation** for the relevant technology (Svelte, SvelteKit, MDN for HTML/CSS/JS) and follow current best practices.
+Read **official documentation** (Svelte, SvelteKit, MDN) when adding features.
 
 ## Design constraints
 
-- **No third-party CSS frameworks** (no Tailwind, Bootstrap, etc.).
-- **No third-party component libraries** (no shadcn, MUI, etc.).
-- Keep the design **simple and custom** — plain CSS, minimal layout, clear typography.
+- **No third-party CSS frameworks** or **component libraries**.
+- Simple, custom CSS — readable, accessible.
+
+## Product UX
+
+onepoint is a **news aggregator** (multi-source feed). UI is **feed-first**.
+
+- **Home** (`/`) = article feed, not a dashboard.
+- **Header** = logo + user menu only. **No nav menu** in the header.
+- **User menu** (top right): username → dropdown → Settings, Log out.
+- **Settings** (`/settings`) = account only. Not under feed or dashboard.
 
 ## API contract
 
-Backend API is documented at `/home/devl0pr/entertainment/onepoint/docs` (`openapi.yaml`).
+OpenAPI: `/home/devl0pr/entertainment/onepoint/docs/openapi.yaml`
 
-- Match request/response shapes to the OpenAPI spec.
-- Default API base URL: `http://localhost:8088`.
-- Auth: Bearer token from login; see OpenAPI `securitySchemes.bearerAuth`.
+Default API base: `http://localhost:8088`
 
 ## Code style
 
-- **JavaScript only** — no TypeScript.
-- Svelte 5 runes in new components.
-- API calls through `src/lib/api/client.js`.
-- Accessible forms: `<label>`, semantic HTML, visible error messages.
+- JavaScript only, Svelte 5 runes.
+- API calls via `src/lib/api/client.js`.
+- Accessible forms and menus (`aria-expanded`, `role="menu"`).

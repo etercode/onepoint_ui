@@ -2,8 +2,21 @@ import { browser } from '$app/environment';
 import * as api from '$lib/api/client';
 import { getAccessToken } from '$lib/auth/session';
 
-class AuthState {
-	/** @type {null | { id: number, email: string, username: string, name: string, lastname: string }} */
+	class AuthState {
+	/** @type {null | {
+	 *   id: number,
+	 *   email: string,
+	 *   username: string,
+	 *   name: string,
+	 *   lastname: string,
+	 *   timezone?: string | null,
+	 *   language?: string | null,
+	 *   birthday?: string | null,
+	 *   description?: string | null,
+	 *   statusText?: string | null,
+	 *   profilePhoto?: string | null,
+	 *   profilePhotoUrl?: string | null
+	 * }} */
 	user = $state(null);
 	loading = $state(false);
 	initialized = $state(false);

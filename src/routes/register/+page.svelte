@@ -2,12 +2,17 @@
 	import { goto } from '$app/navigation';
 	import { ApiClientError, register } from '$lib/api/client';
 	import PasswordInput from '$lib/components/PasswordInput.svelte';
+	import UsernameField from '$lib/components/UsernameField.svelte';
+
+	let usernameField = $state(/** @type {UsernameField | undefined} */ (undefined));
 
 	let email = $state('');
 	let password = $state('');
 	let username = $state('');
 	let name = $state('');
 	let lastname = $state('');
+	let timezone = $state('');
+	let language = $state('');
 	let birthday = $state('');
 	let statusText = $state('');
 	let description = $state('');
@@ -18,6 +23,12 @@
 	async function handleSubmit(event) {
 		event.preventDefault();
 		error = '';
+
+		if (usernameField && !(await usernameField.validate())) {
+			error = 'Choose an available username';
+			return;
+		}
+
 		submitting = true;
 
 		try {
@@ -27,6 +38,8 @@
 				username,
 				name,
 				lastname,
+				timezone: timezone.trim() || null,
+				language: language.trim() || null,
 				birthday: birthday || null,
 				statusText: statusText || null,
 				description: description || null
@@ -82,18 +95,7 @@
 				/>
 			</div>
 
-			<div class="form-field">
-				<label for="username">Username</label>
-				<input
-					id="username"
-					type="text"
-					name="username"
-					autocomplete="username"
-					required
-					minlength="3"
-					bind:value={username}
-				/>
-			</div>
+			<UsernameField bind:this={usernameField} id="username" bind:value={username} required />
 
 			<div class="form-row">
 				<div class="form-field">
@@ -103,6 +105,31 @@
 				<div class="form-field">
 					<label for="lastname">Last name</label>
 					<input id="lastname" type="text" name="lastname" required bind:value={lastname} />
+				</div>
+			</div>
+
+			<div class="form-row">
+				<div class="form-field">
+					<label for="timezone">Timezone <span class="optional">(optional)</span></label>
+					<input
+						id="timezone"
+						type="text"
+						name="timezone"
+						placeholder="Europe/Istanbul"
+						maxlength="64"
+						bind:value={timezone}
+					/>
+				</div>
+				<div class="form-field">
+					<label for="language">Language <span class="optional">(optional)</span></label>
+					<input
+						id="language"
+						type="text"
+						name="language"
+						placeholder="en"
+						maxlength="12"
+						bind:value={language}
+					/>
 				</div>
 			</div>
 
