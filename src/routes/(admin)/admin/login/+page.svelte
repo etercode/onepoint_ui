@@ -41,7 +41,7 @@
 </script>
 
 <svelte:head>
-	<title>Admin girişi — onepoint</title>
+	<title>Admin girişi — Mirvari Mebel</title>
 </svelte:head>
 
 <div class="adm-login-page">
@@ -49,7 +49,7 @@
 		<div class="adm-sidebar-mark" style="margin-bottom: 2rem;">OP</div>
 		<h1>İdarəetmə mərkəzi</h1>
 		<p>
-			onepoint mağazasının məhsullarını, sifarişlərini və müştəri müraciətlərini
+			Mirvari Mebel mağazasının məhsullarını, sifarişlərini və müştəri müraciətlərini
 			bir paneldən idarə edin.
 		</p>
 	</div>

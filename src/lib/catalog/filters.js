@@ -7,10 +7,10 @@
  *   onSaleOnly: boolean
  * }} CatalogFilters */
 
-/** @param {import('$lib/data/marketplace').CatalogItem & Record<string, unknown>[]} products */
+/** @param {Record<string, unknown>[]} products */
 export function getPriceBounds(products) {
 	if (products.length === 0) return { min: 0, max: 0 };
-	const prices = products.map((p) => p.price);
+	const prices = products.map((p) => /** @type {number} */ (p.price));
 	return { min: Math.min(...prices), max: Math.max(...prices) };
 }
 
@@ -28,8 +28,10 @@ export function defaultFilters(bounds) {
 
 /** @param {Record<string, unknown>[]} products @param {CatalogFilters} filters */
 export function filterProducts(products, filters) {
+	const min = Math.min(filters.minPrice, filters.maxPrice);
+	const max = Math.max(filters.minPrice, filters.maxPrice);
 	return products.filter((p) => {
-		if (p.price < filters.minPrice || p.price > filters.maxPrice) return false;
+		if (p.price < min || p.price > max) return false;
 		if (filters.category && p.category !== filters.category) return false;
 		if (filters.collection && p.collection !== filters.collection) return false;
 		if (filters.inStockOnly && !p.inStock) return false;

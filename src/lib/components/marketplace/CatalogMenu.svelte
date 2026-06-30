@@ -1,7 +1,14 @@
 <script>
-	import { categories, categoryHref, collectionHref, collections } from '$lib/data/marketplace';
+	import { categoryHref, collectionHref } from '$lib/data/marketplace';
 
-	let { open = $bindable(false) } = $props();
+	/**
+	 * @type {{
+	 *   categories: Record<string, unknown>[],
+	 *   collections: Record<string, unknown>[],
+	 *   open?: boolean
+	 * }}
+	 */
+	let { categories, collections, open = $bindable(false) } = $props();
 
 	let menuEl = $state(/** @type {HTMLDivElement | undefined} */ (undefined));
 
@@ -52,7 +59,7 @@
 				<p class="mp-catalog-section-title">Kateqoriyalar</p>
 				<div class="mp-catalog-grid">
 					{#each categories as cat}
-						<a href={categoryHref(cat.name)} class="mp-catalog-item" role="menuitem" onclick={close}>
+						<a href={categoryHref(cat.slug)} class="mp-catalog-item" role="menuitem" onclick={close}>
 							<img src={cat.image} alt="" loading="lazy" />
 							<span>{cat.name}</span>
 						</a>
@@ -64,7 +71,7 @@
 				<p class="mp-catalog-section-title">Kolleksiyalar</p>
 				<div class="mp-catalog-chips">
 					{#each collections as col}
-						<a href={collectionHref(col.name)} class="mp-catalog-chip" role="menuitem" onclick={close}>{col.name}</a>
+						<a href={collectionHref(col.slug)} class="mp-catalog-chip" role="menuitem" onclick={close}>{col.name}</a>
 					{/each}
 				</div>
 			</div>

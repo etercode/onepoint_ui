@@ -4,7 +4,7 @@
 </script>
 
 <svelte:head>
-	<title>Çatdırılma — onepoint</title>
+	<title>Çatdırılma — Mirvari Mebel</title>
 </svelte:head>
 
 <PageHero title="Çatdırılma və quraşdırma" subtitle="Sifarişinizi evinizə çatdırır, peşəkar komandamızla quraşdırırıq.">

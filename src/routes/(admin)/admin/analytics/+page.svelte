@@ -11,7 +11,7 @@
 </script>
 
 <svelte:head>
-	<title>Analitika — onepoint Admin</title>
+	<title>Analitika — Mirvari Mebel Admin</title>
 </svelte:head>
 
 <div class="adm-page-header">

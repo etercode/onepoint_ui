@@ -3,7 +3,7 @@
 </script>
 
 <svelte:head>
-	<title>Kolleksiyalar — onepoint Admin</title>
+	<title>Kolleksiyalar — Mirvari Mebel Admin</title>
 </svelte:head>
 
 <div class="adm-page-header">

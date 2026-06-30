@@ -22,7 +22,7 @@
 </script>
 
 <svelte:head>
-	<title>Konsultasiyalar — onepoint Admin</title>
+	<title>Konsultasiyalar — Mirvari Mebel Admin</title>
 </svelte:head>
 
 <div class="adm-page-header">

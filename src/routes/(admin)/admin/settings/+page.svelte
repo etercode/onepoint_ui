@@ -5,7 +5,7 @@
 </script>
 
 <svelte:head>
-	<title>Parametrlər — onepoint Admin</title>
+	<title>Parametrlər — Mirvari Mebel Admin</title>
 </svelte:head>
 
 <div class="adm-page-header">

@@ -1,4 +1,5 @@
-import { allProducts, categories, collections, formatPrice } from '$lib/data/marketplace';
+import { formatPrice } from '$lib/data/marketplace';
+import { allProducts, categories, collections } from '$lib/admin/catalog-mock';
 import { loadConsultations } from '$lib/admin/consultations';
 
 export const orderStatuses = {

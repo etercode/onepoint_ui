@@ -1,12 +1,52 @@
 <script>
+	import { getProducts } from '$lib/api/client';
 	import { cart } from '$lib/cart/store.svelte';
 	import { formatPrice } from '$lib/data/marketplace';
 	import Breadcrumbs from '$lib/components/marketplace/Breadcrumbs.svelte';
 	import PageHero from '$lib/components/marketplace/PageHero.svelte';
+
+	/** @type {Record<string, unknown>[]} */
+	let products = $state([]);
+	let hydrating = $state(false);
+
+	$effect(() => {
+		if (!cart.ready) return;
+
+		const ids = cart.items.map((line) => line.productId);
+		if (ids.length === 0) {
+			products = [];
+			hydrating = false;
+			return;
+		}
+
+		hydrating = true;
+		getProducts({ ids: ids.join(',') })
+			.then((res) => {
+				products = res.items;
+			})
+			.catch(() => {
+				products = [];
+			})
+			.finally(() => {
+				hydrating = false;
+			});
+	});
+
+	const lines = $derived(
+		cart.items
+			.map((line) => {
+				const product = products.find((p) => p.id === line.productId);
+				if (!product) return null;
+				return { ...line, product, lineTotal: product.price * line.quantity };
+			})
+			.filter(Boolean)
+	);
+
+	const subtotal = $derived(lines.reduce((sum, line) => sum + line.lineTotal, 0));
 </script>
 
 <svelte:head>
-	<title>Səbət — onepoint</title>
+	<title>Səbət — Mirvari Mebel</title>
 </svelte:head>
 
 <PageHero title="Səbət" subtitle={cart.count > 0 ? `${cart.count} məhsul seçilib` : 'Səbətiniz boşdur'}>
@@ -17,10 +57,12 @@
 
 <main class="mp-inner-main">
 	<div class="mp-container">
-		{#if cart.lines.length > 0}
+		{#if hydrating && cart.count > 0}
+			<p class="mp-results-count">Səbət yüklənir…</p>
+		{:else if lines.length > 0}
 			<div class="mp-cart-layout">
 				<div class="mp-cart-lines">
-					{#each cart.lines as line (line.productId)}
+					{#each lines as line (line.productId)}
 						<article class="mp-cart-line">
 							<a href="/product/{line.product.id}" class="mp-cart-line-img">
 								<img src={line.product.image} alt={line.product.name} />
@@ -60,7 +102,7 @@
 					<h2>Sifariş xülasəsi</h2>
 					<div class="mp-cart-summary-row">
 						<span>Ara cəm</span>
-						<strong>{formatPrice(cart.subtotal)}</strong>
+						<strong>{formatPrice(subtotal)}</strong>
 					</div>
 					<div class="mp-cart-summary-row">
 						<span>Çatdırılma</span>
@@ -68,7 +110,7 @@
 					</div>
 					<div class="mp-cart-summary-row mp-cart-summary-total">
 						<span>Cəmi</span>
-						<strong>{formatPrice(cart.subtotal)}</strong>
+						<strong>{formatPrice(subtotal)}</strong>
 					</div>
 					<button type="button" class="mp-btn-primary mp-cart-checkout">Sifarişi rəsmiləşdir</button>
 					<a href="/catalog" class="mp-btn-secondary mp-cart-continue">Alış-verişə davam et</a>

@@ -31,13 +31,13 @@
 </script>
 
 <svelte:head>
-	<title>Log in — onepoint</title>
+	<title>Log in — Mirvari Mebel</title>
 </svelte:head>
 
 <div class="auth-page">
 	<div class="card">
 		<h1>Log in</h1>
-		<p class="subtitle">Sign in to your onepoint account</p>
+		<p class="subtitle">Sign in to your Mirvari Mebel account</p>
 
 		{#if error}
 			<div class="alert alert-error" role="alert">{error}</div>

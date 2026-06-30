@@ -5,7 +5,7 @@
 </script>
 
 <svelte:head>
-	<title>Mağazalar — onepoint</title>
+	<title>Mağazalar — Mirvari Mebel</title>
 </svelte:head>
 
 <PageHero title="Mağazalarımız" subtitle="Məhsullarımızı yaxından görün, toxunun və peşəkar məsləhət alın.">

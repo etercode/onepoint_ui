@@ -39,6 +39,6 @@
 		</div>
 	</a>
 	{#if product.inStock}
-		<AddToCartButton productId={product.id} compact />
+		<AddToCartButton {product} compact />
 	{/if}
 </article>

@@ -15,7 +15,7 @@
 	<AdminSidebar open={sidebarOpen} onClose={() => (sidebarOpen = false)} />
 	<div class="adm-main">
 		<AdminTopbar
-			title="onepoint Admin"
+			title="Mirvari Mebel Admin"
 			{subtitle}
 			onMenuToggle={() => (sidebarOpen = !sidebarOpen)}
 			{onLogout}

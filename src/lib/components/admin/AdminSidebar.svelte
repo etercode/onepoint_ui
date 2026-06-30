@@ -47,9 +47,9 @@
 
 <aside class="adm-sidebar" class:open>
 	<div class="adm-sidebar-brand">
-		<span class="adm-sidebar-mark">OP</span>
+		<span class="adm-sidebar-mark">M</span>
 		<div>
-			<strong>onepoint</strong>
+			<strong>Mirvari Mebel</strong>
 			<span>Admin panel</span>
 		</div>
 	</div>

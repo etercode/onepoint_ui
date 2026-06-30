@@ -5,10 +5,10 @@
 </script>
 
 <svelte:head>
-	<title>Otaq ideyaları — onepoint</title>
+	<title>Otaq ideyaları — Mirvari Mebel</title>
 </svelte:head>
 
-<PageHero title="Otaq ideyaları" subtitle="onepoint məhsulları ilə hazırlanmış interyer təklifləri və ilhamlar.">
+<PageHero title="Otaq ideyaları" subtitle="Mirvari Mebel məhsulları ilə hazırlanmış interyer təklifləri və ilhamlar.">
 	{#snippet children()}
 		<Breadcrumbs items={[{ label: 'Ana səhifə', href: '/' }, { label: 'Otaq ideyaları' }]} />
 	{/snippet}

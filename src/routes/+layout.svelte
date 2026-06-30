@@ -17,7 +17,7 @@
 
 <svelte:head>
 	<link rel="icon" href={favicon} />
-	<title>onepoint</title>
+	<title>Mirvari Mebel</title>
 </svelte:head>
 
 {@render children()}

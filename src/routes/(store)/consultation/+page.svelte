@@ -18,7 +18,7 @@
 </script>
 
 <svelte:head>
-	<title>Konsultasiya — onepoint</title>
+	<title>Konsultasiya — Mirvari Mebel</title>
 </svelte:head>
 
 <PageHero title="Pulsuz konsultasiya" subtitle="Dizaynerlərimiz sizin üçün ideal mebel həllini seçsin.">

@@ -160,3 +160,48 @@ export async function updatePreferences(data) {
 		body: JSON.stringify(data)
 	}, true);
 }
+
+/** @param {Record<string, string | number | boolean | undefined>} params */
+function catalogQuery(params) {
+	const search = new URLSearchParams();
+	for (const [key, value] of Object.entries(params)) {
+		if (value === undefined || value === null || value === '') continue;
+		search.set(key, typeof value === 'boolean' ? (value ? '1' : '0') : String(value));
+	}
+	const qs = search.toString();
+	return qs ? `?${qs}` : '';
+}
+
+/** @param {Record<string, string | number | boolean | undefined>} [params] */
+export async function getProducts(params = {}) {
+	return request(`/api/products${catalogQuery(params)}`);
+}
+
+/** @param {number | string} id */
+export async function getProduct(id) {
+	return request(`/api/products/${id}`);
+}
+
+/** @param {number | string} id */
+export async function getRelatedProducts(id) {
+	return request(`/api/products/${id}/related`);
+}
+
+export async function getCategories() {
+	return request('/api/categories');
+}
+
+/** @param {string} slug */
+export async function getCategory(slug) {
+	return request(`/api/categories/${slug}`);
+}
+
+/** @param {{ featured?: boolean }} [options] */
+export async function getCollections({ featured } = {}) {
+	return request(`/api/collections${featured ? '?featured=1' : ''}`);
+}
+
+/** @param {string} slug */
+export async function getCollection(slug) {
+	return request(`/api/collections/${slug}`);
+}

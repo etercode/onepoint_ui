@@ -8,7 +8,7 @@
 	import '$lib/styles/marketplace-index.css';
 	import '$lib/styles/marketplace-pages.css';
 
-	let { children } = $props();
+	let { data, children } = $props();
 
 	onMount(() => {
 		auth.init();
@@ -22,7 +22,11 @@
 </script>
 
 <div class="mp-page">
-	<MarketplaceHeader onLogout={handleLogout} />
+	<MarketplaceHeader
+		categories={data.navCategories}
+		collections={data.navCollections}
+		onLogout={handleLogout}
+	/>
 	{@render children()}
 	<StoreFooter />
 </div>

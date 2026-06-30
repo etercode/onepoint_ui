@@ -15,7 +15,7 @@
 </script>
 
 <svelte:head>
-	<title>Məhsullar — onepoint Admin</title>
+	<title>Məhsullar — Mirvari Mebel Admin</title>
 </svelte:head>
 
 <div class="adm-page-header">

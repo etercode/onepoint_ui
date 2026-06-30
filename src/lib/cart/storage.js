@@ -2,7 +2,7 @@ import { browser } from '$app/environment';
 
 const CART_KEY = 'onepoint_cart';
 
-/** @typedef {{ productId: string, quantity: number }} CartLine */
+/** @typedef {{ productId: number, quantity: number }} CartLine */
 
 /** @returns {CartLine[]} */
 export function loadCart() {
@@ -11,7 +11,13 @@ export function loadCart() {
 		const raw = localStorage.getItem(CART_KEY);
 		if (!raw) return [];
 		const parsed = JSON.parse(raw);
-		return Array.isArray(parsed) ? parsed : [];
+		if (!Array.isArray(parsed)) return [];
+		return parsed
+			.map((line) => ({
+				productId: Number(line.productId),
+				quantity: Number(line.quantity) || 1
+			}))
+			.filter((line) => Number.isInteger(line.productId) && line.productId > 0 && line.quantity > 0);
 	} catch {
 		return [];
 	}

@@ -3,7 +3,7 @@
 </script>
 
 <svelte:head>
-	<title>Müştərilər — onepoint Admin</title>
+	<title>Müştərilər — Mirvari Mebel Admin</title>
 </svelte:head>
 
 <div class="adm-page-header">

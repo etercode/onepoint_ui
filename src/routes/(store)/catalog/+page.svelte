@@ -1,8 +1,5 @@
 <script>
 	import {
-		allProducts
-	} from '$lib/data/marketplace';
-	import {
 		defaultFilters,
 		filterProducts,
 		getPriceBounds,
@@ -13,15 +10,26 @@
 	import PageHero from '$lib/components/marketplace/PageHero.svelte';
 	import ProductCard from '$lib/components/marketplace/ProductCard.svelte';
 
-	const bounds = getPriceBounds(allProducts);
-	const collectionOptions = getUniqueCollections(allProducts);
+	let { data } = $props();
 
-	let minPrice = $state(bounds.min);
-	let maxPrice = $state(bounds.max);
+	const allProducts = $derived(data.products);
+	const bounds = $derived(getPriceBounds(allProducts));
+	const collectionOptions = $derived(getUniqueCollections(allProducts));
+
+	let minPrice = $state(0);
+	let maxPrice = $state(0);
 	let category = $state('');
 	let collection = $state('');
 	let inStockOnly = $state(false);
 	let onSaleOnly = $state(false);
+
+	$effect(() => {
+		const b = bounds;
+		if (allProducts.length > 0) {
+			minPrice = b.min;
+			maxPrice = b.max;
+		}
+	});
 
 	const filtered = $derived(
 		filterProducts(allProducts, {
@@ -46,7 +54,7 @@
 </script>
 
 <svelte:head>
-	<title>Kataloq — onepoint</title>
+	<title>Kataloq — Mirvari Mebel</title>
 </svelte:head>
 
 <PageHero title="Kataloq" subtitle="Qiymət, kateqoriya və kolleksiyaya görə filtrləyin.">
@@ -67,6 +75,7 @@
 			priceMin={bounds.min}
 			priceMax={bounds.max}
 			collections={collectionOptions}
+			categories={data.navCategories}
 			onreset={resetFilters}
 		/>
 

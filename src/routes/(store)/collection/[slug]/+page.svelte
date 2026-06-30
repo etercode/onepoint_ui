@@ -1,23 +1,17 @@
 <script>
-	import { page } from '$app/stores';
-	import {
-		collectionHref,
-		collections,
-		getCollectionBySlug,
-		getProductsByCollection,
-		slugify
-	} from '$lib/data/marketplace';
+	import { collectionHref } from '$lib/data/marketplace';
 	import Breadcrumbs from '$lib/components/marketplace/Breadcrumbs.svelte';
 	import PageHero from '$lib/components/marketplace/PageHero.svelte';
 	import ProductCard from '$lib/components/marketplace/ProductCard.svelte';
 
-	const slug = $derived($page.params.slug);
-	const collection = $derived(getCollectionBySlug(slug));
-	const products = $derived(collection ? getProductsByCollection(collection.name) : []);
+	let { data } = $props();
+
+	const collection = $derived(data.collection);
+	const products = $derived(data.products);
 </script>
 
 <svelte:head>
-	<title>{collection ? `${collection.name} kolleksiyası — onepoint` : 'Kolleksiya tapılmadı'}</title>
+	<title>{collection ? `${collection.name} kolleksiyası — Mirvari Mebel` : 'Kolleksiya tapılmadı'}</title>
 </svelte:head>
 
 {#if collection}
@@ -38,8 +32,8 @@
 			<aside class="mp-sidebar">
 				<h3>Kolleksiyalar</h3>
 				<nav class="mp-sidebar-nav">
-					{#each collections as col}
-						<a href={collectionHref(col.name)} class:active={slugify(col.name) === slug}>{col.name}</a>
+					{#each data.collections as col}
+						<a href={collectionHref(col.slug)} class:active={col.slug === collection.slug}>{col.name}</a>
 					{/each}
 				</nav>
 			</aside>

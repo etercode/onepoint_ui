@@ -1,22 +1,21 @@
 <script>
-	import { page } from '$app/stores';
 	import {
 		categoryHref,
 		collectionHref,
-		formatPrice,
-		getProductById,
-		getRelatedProducts
+		formatPrice
 	} from '$lib/data/marketplace';
 	import Breadcrumbs from '$lib/components/marketplace/Breadcrumbs.svelte';
 	import AddToCartButton from '$lib/components/marketplace/AddToCartButton.svelte';
 	import ProductCard from '$lib/components/marketplace/ProductCard.svelte';
 
-	const product = $derived(getProductById($page.params.id));
-	const related = $derived(product ? getRelatedProducts(product.id) : []);
+	let { data } = $props();
+
+	const product = $derived(data.product);
+	const related = $derived(data.related);
 </script>
 
 <svelte:head>
-	<title>{product ? `${product.name} — onepoint` : 'Məhsul tapılmadı'}</title>
+	<title>{product ? `${product.name} — Mirvari Mebel` : 'Məhsul tapılmadı'}</title>
 </svelte:head>
 
 {#if product}
@@ -26,7 +25,7 @@
 				items={[
 					{ label: 'Ana səhifə', href: '/' },
 					{ label: 'Kataloq', href: '/catalog' },
-					{ label: product.category, href: categoryHref(product.category) },
+					{ label: product.category, href: categoryHref(product.categorySlug) },
 					{ label: product.name }
 				]}
 			/>
@@ -63,11 +62,11 @@
 					<dl class="mp-product-specs">
 						<div>
 							<dt>Kateqoriya</dt>
-							<dd><a href={categoryHref(product.category)}>{product.category}</a></dd>
+							<dd><a href={categoryHref(product.categorySlug)}>{product.category}</a></dd>
 						</div>
 						<div>
 							<dt>Kolleksiya</dt>
-							<dd><a href={collectionHref(product.collection)}>{product.collection}</a></dd>
+							<dd><a href={collectionHref(product.collectionSlug)}>{product.collection}</a></dd>
 						</div>
 						<div>
 							<dt>Material</dt>
@@ -87,7 +86,7 @@
 
 					<div class="mp-product-actions">
 						{#if product.inStock}
-							<AddToCartButton productId={product.id} />
+							<AddToCartButton {product} />
 						{:else}
 							<button type="button" class="mp-btn-secondary" disabled>Stokda yoxdur</button>
 						{/if}

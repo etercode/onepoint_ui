@@ -146,7 +146,7 @@
 </script>
 
 <svelte:head>
-	<title>Hesab parametrləri — onepoint</title>
+	<title>Hesab parametrləri — Mirvari Mebel</title>
 </svelte:head>
 
 <div class="mp-settings">

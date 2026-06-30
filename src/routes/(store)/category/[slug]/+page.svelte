@@ -1,12 +1,5 @@
 <script>
-	import { page } from '$app/stores';
-	import {
-		categories,
-		categoryHref,
-		getCategoryBySlug,
-		getProductsByCategory,
-		slugify
-	} from '$lib/data/marketplace';
+	import { categoryHref } from '$lib/data/marketplace';
 	import {
 		defaultFilters,
 		filterProducts,
@@ -18,9 +11,10 @@
 	import PageHero from '$lib/components/marketplace/PageHero.svelte';
 	import ProductCard from '$lib/components/marketplace/ProductCard.svelte';
 
-	const slug = $derived($page.params.slug);
-	const category = $derived(getCategoryBySlug(slug));
-	const baseProducts = $derived(category ? getProductsByCategory(category.name) : []);
+	let { data } = $props();
+
+	const category = $derived(data.category);
+	const baseProducts = $derived(data.products);
 	const bounds = $derived(getPriceBounds(baseProducts));
 	const collectionOptions = $derived(getUniqueCollections(baseProducts));
 
@@ -50,8 +44,7 @@
 	);
 
 	function resetFilters() {
-		const b = bounds;
-		const defaults = defaultFilters(b);
+		const defaults = defaultFilters(bounds);
 		minPrice = defaults.minPrice;
 		maxPrice = defaults.maxPrice;
 		collection = defaults.collection;
@@ -61,11 +54,14 @@
 </script>
 
 <svelte:head>
-	<title>{category ? `${category.name} — onepoint` : 'Kateqoriya tapılmadı'}</title>
+	<title>{category ? `${category.name} — Mirvari Mebel` : 'Kateqoriya tapılmadı'}</title>
 </svelte:head>
 
 {#if category}
-	<PageHero title={category.name} subtitle="{category.count} məhsul · {category.from} ₼-dan">
+	<PageHero
+		title={category.name}
+		subtitle={`${category.productCount} məhsul${category.priceFrom != null ? ` · ${category.priceFrom} ₼-dan` : ''}`}
+	>
 		{#snippet children()}
 			<Breadcrumbs
 				items={[
@@ -84,8 +80,8 @@
 					<h3>Kateqoriyalar</h3>
 					<nav class="mp-sidebar-nav">
 						<a href="/catalog">Hamısı</a>
-						{#each categories as cat}
-							<a href={categoryHref(cat.name)} class:active={slugify(cat.name) === slug}>{cat.name}</a>
+						{#each data.navCategories as cat}
+							<a href={categoryHref(cat.slug)} class:active={cat.slug === category.slug}>{cat.name}</a>
 						{/each}
 					</nav>
 				</aside>

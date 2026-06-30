@@ -1,8 +1,7 @@
 import { browser } from '$app/environment';
-import { getProductById } from '$lib/data/marketplace';
 import { loadCart, saveCart } from '$lib/cart/storage';
 
-/** @typedef {{ productId: string, quantity: number }} CartLine */
+/** @typedef {{ productId: number, quantity: number }} CartLine */
 
 class CartState {
 	/** @type {CartLine[]} */
@@ -14,31 +13,17 @@ class CartState {
 		return this.items.reduce((sum, line) => sum + line.quantity, 0);
 	}
 
-	get lines() {
-		return this.items
-			.map((line) => {
-				const product = getProductById(line.productId);
-				if (!product) return null;
-				return { ...line, product, lineTotal: product.price * line.quantity };
-			})
-			.filter(Boolean);
-	}
-
-	get subtotal() {
-		return this.lines.reduce((sum, line) => sum + line.lineTotal, 0);
-	}
-
 	init() {
 		if (!browser || this.ready) return;
 		this.items = loadCart();
 		this.ready = true;
 	}
 
-	/** @param {string} productId @param {number} [quantity] */
-	add(productId, quantity = 1) {
-		const product = getProductById(productId);
-		if (!product || !product.inStock) return false;
+	/** @param {Record<string, unknown>} product @param {number} [quantity] */
+	add(product, quantity = 1) {
+		if (!product?.inStock) return false;
 
+		const productId = /** @type {number} */ (product.id);
 		const existing = this.items.find((line) => line.productId === productId);
 		if (existing) {
 			this.items = this.items.map((line) =>
@@ -53,13 +38,13 @@ class CartState {
 		return true;
 	}
 
-	/** @param {string} productId */
+	/** @param {number} productId */
 	remove(productId) {
 		this.items = this.items.filter((line) => line.productId !== productId);
 		saveCart(this.items);
 	}
 
-	/** @param {string} productId @param {number} quantity */
+	/** @param {number} productId @param {number} quantity */
 	setQuantity(productId, quantity) {
 		if (quantity < 1) {
 			this.remove(productId);
@@ -76,12 +61,12 @@ class CartState {
 		saveCart(this.items);
 	}
 
-	/** @param {string} productId */
+	/** @param {number} productId */
 	has(productId) {
 		return this.items.some((line) => line.productId === productId);
 	}
 
-	/** @param {string} productId */
+	/** @param {number} productId */
 	quantityOf(productId) {
 		return this.items.find((line) => line.productId === productId)?.quantity ?? 0;
 	}

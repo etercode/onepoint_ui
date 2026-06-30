@@ -1,15 +1,15 @@
 <script>
 	import { cart } from '$lib/cart/store.svelte';
 
-	/** @type {{ productId: string, compact?: boolean }} */
-	let { productId, compact = false } = $props();
+	/** @type {{ product: Record<string, unknown>, compact?: boolean }} */
+	let { product, compact = false } = $props();
 
 	let added = $state(false);
 
 	function handleClick(event) {
 		event.preventDefault();
 		event.stopPropagation();
-		const ok = cart.add(productId);
+		const ok = cart.add(product);
 		if (ok) {
 			added = true;
 			setTimeout(() => (added = false), 1500);

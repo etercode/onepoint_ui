@@ -1,22 +1,20 @@
 <script>
 	import {
 		COMPANY,
-		categories,
-		collections,
 		companyBenefits,
 		categoryHref,
 		collectionHref,
-		featuredProducts,
-		newestProducts,
 		popularSearches,
 		roomInspirations
 	} from '$lib/data/marketplace';
 	import ProductCard from '$lib/components/marketplace/ProductCard.svelte';
+
+	let { data } = $props();
 </script>
 
 <svelte:head>
 	<title>{COMPANY.name} — {COMPANY.tagline}</title>
-	<meta name="description" content="onepoint — Azərbaycanda premium mebel. Divan, yataq, qonaq otağı və daha çoxu. Pulsuz çatdırılma, 2 il zəmanət." />
+	<meta name="description" content="Mirvari Mebel — Azərbaycanda premium mebel. Divan, yataq, qonaq otağı və daha çoxu. Pulsuz çatdırılma, 2 il zəmanət." />
 </svelte:head>
 
 <section class="mp-hero">
@@ -25,7 +23,7 @@
 			<p class="mp-hero-eyebrow">{COMPANY.since}-dan bəri · Azərbaycan mebel brendi</p>
 			<h1>Evdə daha gözəldir</h1>
 			<p class="mp-hero-lead">
-				Rahatlıq və harmoniyanı öz evində birləşdir. onepoint kolleksiyalarından divan, yataq,
+				Rahatlıq və harmoniyanı öz evində birləşdir. Mirvari Mebel kolleksiyalarından divan, yataq,
 				qonaq otağı və daha çoxunu kəşf et.
 			</p>
 			<div class="mp-hero-cta">
@@ -73,14 +71,19 @@
 			<a href="/catalog" class="mp-see-all">Bütün kataloq →</a>
 		</div>
 		<div class="mp-category-grid">
-			{#each categories as cat}
-				<a href={categoryHref(cat.name)} class="mp-category-card">
+			{#each data.categories as cat}
+				<a href={categoryHref(cat.slug)} class="mp-category-card">
 					<div class="mp-category-img">
 						<img src={cat.image} alt={cat.name} loading="lazy" />
 					</div>
 					<div class="mp-category-info">
 						<h3>{cat.name}</h3>
-						<p>{cat.count} məhsul · {cat.from} ₼-dan</p>
+						<p>
+							{cat.productCount} məhsul
+							{#if cat.priceFrom != null}
+								· {cat.priceFrom} ₼-dan
+							{/if}
+						</p>
 					</div>
 				</a>
 			{/each}
@@ -93,12 +96,12 @@
 		<div class="mp-section-head">
 			<div>
 				<h2>Seçilmiş məhsullar</h2>
-				<p class="mp-section-desc">Ən çox sevilən onepoint kolleksiyaları</p>
+				<p class="mp-section-desc">Ən çox sevilən Mirvari Mebel kolleksiyaları</p>
 			</div>
 			<a href="/catalog" class="mp-see-all">Hamısına bax →</a>
 		</div>
 		<div class="mp-product-grid">
-			{#each featuredProducts as product}
+			{#each data.featuredProducts as product}
 				<ProductCard {product} featured />
 			{/each}
 		</div>
@@ -110,7 +113,7 @@
 		<div class="mp-section-head">
 			<div>
 				<h2>Otaq ideyaları</h2>
-				<p class="mp-section-desc">onepoint ilə hazırlanmış interyer təklifləri</p>
+				<p class="mp-section-desc">Mirvari Mebel ilə hazırlanmış interyer təklifləri</p>
 			</div>
 			<a href="/inspirations" class="mp-see-all">Daha çox →</a>
 		</div>
@@ -135,13 +138,13 @@
 			<h2>Kolleksiyalarımız</h2>
 		</div>
 		<div class="mp-brand-grid">
-			{#each collections as col}
-				<a href={collectionHref(col.name)} class="mp-brand-card">
+			{#each data.collections as col}
+				<a href={collectionHref(col.slug)} class="mp-brand-card">
 					<img class="mp-collection-thumb" src={col.image} alt={col.name} loading="lazy" />
 					<div>
 						<strong>{col.name}</strong>
 						<p>{col.tagline}</p>
-						<span>{col.products} məhsul</span>
+						<span>{col.productCount} məhsul</span>
 					</div>
 				</a>
 			{/each}
@@ -172,7 +175,7 @@
 			</div>
 		</div>
 		<div class="mp-product-grid mp-product-grid-compact">
-			{#each newestProducts as product}
+			{#each data.newestProducts as product}
 				<ProductCard {product} />
 			{/each}
 		</div>

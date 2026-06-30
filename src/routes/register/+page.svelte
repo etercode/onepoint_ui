@@ -58,13 +58,13 @@
 </script>
 
 <svelte:head>
-	<title>Register — onepoint</title>
+	<title>Register — Mirvari Mebel</title>
 </svelte:head>
 
 <div class="auth-page">
 	<div class="card" style="max-width: 480px;">
 		<h1>Create account</h1>
-		<p class="subtitle">Register for a new onepoint account</p>
+		<p class="subtitle">Register for a new Mirvari Mebel account</p>
 
 		{#if error}
 			<div class="alert alert-error" role="alert">{error}</div>

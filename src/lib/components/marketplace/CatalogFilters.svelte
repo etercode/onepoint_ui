@@ -1,5 +1,5 @@
 <script>
-	import { categories, formatPrice } from '$lib/data/marketplace';
+	import { formatPrice } from '$lib/data/marketplace';
 
 	/**
 	 * @type {{
@@ -12,6 +12,7 @@
 	 *   priceMin: number,
 	 *   priceMax: number,
 	 *   collections: string[],
+	 *   categories?: Record<string, unknown>[],
 	 *   lockCategory?: string,
 	 *   onreset?: () => void
 	 * }}
@@ -26,6 +27,7 @@
 		priceMin,
 		priceMax,
 		collections,
+		categories = [],
 		lockCategory = '',
 		onreset = () => {}
 	} = $props();

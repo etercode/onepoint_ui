@@ -3,7 +3,7 @@
 </script>
 
 <svelte:head>
-	<title>Kateqoriyalar — onepoint Admin</title>
+	<title>Kateqoriyalar — Mirvari Mebel Admin</title>
 </svelte:head>
 
 <div class="adm-page-header">

@@ -13,7 +13,7 @@
 </script>
 
 <svelte:head>
-	<title>İdarə paneli — onepoint Admin</title>
+	<title>İdarə paneli — Mirvari Mebel Admin</title>
 </svelte:head>
 
 <div class="adm-page-header">

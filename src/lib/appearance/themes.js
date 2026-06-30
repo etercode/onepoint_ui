@@ -50,7 +50,7 @@ export const themes = {
 
 /** @type {Record<AccentId, { label: string, primary: string, hover: string, accent: string }>} */
 export const accents = {
-	terracotta: { label: 'Terrakota', primary: '#c45d2c', hover: '#a84d24', accent: 'rgb(196 93 44 / 0.14)' },
+	terracotta: { label: 'Qara', primary: '#000000', hover: '#333333', accent: 'rgb(0 0 0 / 0.08)' },
 	blue: { label: 'Sky', primary: '#1d9bf0', hover: '#1a8cd8', accent: 'rgb(29 155 240 / 0.12)' },
 	facebook: { label: 'Classic', primary: '#1877f2', hover: '#166fe5', accent: 'rgb(24 119 242 / 0.12)' },
 	purple: { label: 'Violet', primary: '#7c3aed', hover: '#6d28d9', accent: 'rgb(124 58 237 / 0.12)' },
@@ -61,11 +61,11 @@ export const accents = {
 /** @type {Record<ThemeId, Record<string, string>>} */
 export const mpThemes = {
 	light: {
-		'--mp-bg': '#faf8f5',
+		'--mp-bg': '#fafafa',
 		'--mp-surface': '#ffffff',
-		'--mp-text': '#1a1614',
+		'--mp-text': '#111111',
 		'--mp-muted': '#6b6560',
-		'--mp-border': '#e8e2db',
+		'--mp-border': '#e5e5e5',
 		'--mp-accent': '#2d6a4f',
 		'--mp-accent-soft': '#e8f5ee',
 		'--mp-shadow': '0 2px 8px rgb(26 22 20 / 0.06)',
