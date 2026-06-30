@@ -1,4 +1,3 @@
-import { error } from '@sveltejs/kit';
 import { ApiClientError, getProduct, getRelatedProducts } from '$lib/api/client';
 
 /** @param {import('./$types').PageLoadEvent} event */
@@ -22,6 +21,7 @@ export async function load({ params }) {
 		if (e instanceof ApiClientError && e.status === 404) {
 			return { product: null, related: [] };
 		}
-		throw error(500, 'Məhsul yüklənə bilmədi');
+		console.error('Product: failed to load', id, e);
+		return { product: null, related: [], apiUnavailable: true };
 	}
 }

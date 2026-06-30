@@ -1,4 +1,4 @@
-import { API_URL } from '$lib/config';
+import { browser } from '$app/environment';
 import { clearSession, getAccessToken, getRefreshToken, saveSession } from '$lib/auth/session';
 
 export class ApiClientError extends Error {
@@ -8,6 +8,17 @@ export class ApiClientError extends Error {
 		this.status = status;
 		this.body = body;
 	}
+}
+
+const REQUEST_TIMEOUT_MS = 15_000;
+const DEFAULT_API_URL = 'http://localhost:8088';
+
+async function apiBase() {
+	if (browser) {
+		return import.meta.env.VITE_API_URL ?? DEFAULT_API_URL;
+	}
+	const { env } = await import('$env/dynamic/private');
+	return env.API_URL ?? import.meta.env.VITE_API_URL ?? DEFAULT_API_URL;
 }
 
 /** @param {Response} response */
@@ -30,14 +41,44 @@ async function request(path, options = {}, auth = false) {
 		if (token) headers.set('Authorization', `Bearer ${token}`);
 	}
 
-	let response = await fetch(`${API_URL}${path}`, { ...options, headers, body });
+	const controller = new AbortController();
+	const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+	const fetchOptions = { ...options, headers, body, signal: controller.signal };
+
+	let response;
+	try {
+		response = await fetch(`${await apiBase()}${path}`, fetchOptions);
+	} catch (e) {
+		clearTimeout(timeoutId);
+		if (e instanceof Error && e.name === 'AbortError') {
+			throw new ApiClientError(504, {}, 'API request timed out');
+		}
+		throw new ApiClientError(503, {}, 'API is unreachable');
+	}
+	clearTimeout(timeoutId);
 
 	if (auth && response.status === 401) {
 		const refreshed = await tryRefresh();
 		if (refreshed) {
 			const token = getAccessToken();
 			if (token) headers.set('Authorization', `Bearer ${token}`);
-			response = await fetch(`${API_URL}${path}`, { ...options, headers, body });
+			const retryController = new AbortController();
+			const retryTimeoutId = setTimeout(() => retryController.abort(), REQUEST_TIMEOUT_MS);
+			try {
+				response = await fetch(`${await apiBase()}${path}`, {
+					...options,
+					headers,
+					body,
+					signal: retryController.signal
+				});
+			} catch (e) {
+				clearTimeout(retryTimeoutId);
+				if (e instanceof Error && e.name === 'AbortError') {
+					throw new ApiClientError(504, {}, 'API request timed out');
+				}
+				throw new ApiClientError(503, {}, 'API is unreachable');
+			}
+			clearTimeout(retryTimeoutId);
 		}
 	}
 

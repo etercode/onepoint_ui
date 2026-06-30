@@ -800,3 +800,52 @@ button {
 		padding: 0.75rem;
 	}
 }
+
+/* Global route transition loading */
+.nav-progress {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	z-index: 9999;
+	height: 3px;
+	background: rgb(0 0 0 / 0.06);
+	pointer-events: none;
+}
+
+.nav-progress-bar {
+	height: 100%;
+	width: 35%;
+	background: linear-gradient(90deg, var(--mp-primary, #000), #444);
+	border-radius: 0 2px 2px 0;
+	animation: nav-progress-slide 0.9s ease-in-out infinite;
+	box-shadow: 0 0 8px rgb(0 0 0 / 0.2);
+}
+
+.nav-progress-overlay {
+	position: fixed;
+	inset: 0;
+	z-index: 9998;
+	background: rgb(255 255 255 / 0.35);
+	backdrop-filter: blur(1px);
+	pointer-events: none;
+	animation: nav-overlay-in 0.2s ease;
+}
+
+@keyframes nav-progress-slide {
+	0% {
+		transform: translateX(-120%);
+	}
+	100% {
+		transform: translateX(320%);
+	}
+}
+
+@keyframes nav-overlay-in {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}

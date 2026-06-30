@@ -23,6 +23,7 @@
 	let collection = $state('');
 	let inStockOnly = $state(false);
 	let onSaleOnly = $state(false);
+	let filtersOpen = $state(false);
 
 	$effect(() => {
 		if (baseProducts.length > 0) {
@@ -51,6 +52,11 @@
 		inStockOnly = defaults.inStockOnly;
 		onSaleOnly = defaults.onSaleOnly;
 	}
+
+	function openFilters() {
+		filtersOpen = true;
+		document.getElementById('catalog-filters')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+	}
 </script>
 
 <svelte:head>
@@ -61,6 +67,7 @@
 	<PageHero
 		title={category.name}
 		subtitle={`${category.productCount} məhsul${category.priceFrom != null ? ` · ${category.priceFrom} ₼-dan` : ''}`}
+		image={category.image}
 	>
 		{#snippet children()}
 			<Breadcrumbs
@@ -73,10 +80,21 @@
 		{/snippet}
 	</PageHero>
 
+	<nav class="mp-category-rail mp-container" aria-label="Kateqoriyalar">
+		<a href="/catalog" class="mp-category-rail-item">Hamısı</a>
+		{#each data.navCategories as cat}
+			<a
+				href={categoryHref(cat.slug)}
+				class="mp-category-rail-item"
+				class:active={cat.slug === category.slug}
+			>{cat.name}</a>
+		{/each}
+	</nav>
+
 	<main class="mp-inner-main">
-		<div class="mp-container mp-inner-grid">
+		<div class="mp-container mp-inner-grid mp-category-layout">
 			<div class="mp-filter-column">
-				<aside class="mp-sidebar mp-sidebar-compact">
+				<aside class="mp-sidebar mp-sidebar-desktop">
 					<h3>Kateqoriyalar</h3>
 					<nav class="mp-sidebar-nav">
 						<a href="/catalog">Hamısı</a>
@@ -92,6 +110,7 @@
 					bind:collection
 					bind:inStockOnly
 					bind:onSaleOnly
+					bind:filtersOpen
 					lockCategory={category.name}
 					priceMin={bounds.min}
 					priceMax={bounds.max}
@@ -100,8 +119,15 @@
 				/>
 			</div>
 
-			<div>
-				<p class="mp-results-count">{filtered.length} məhsul</p>
+			<div class="mp-category-main">
+				<div class="mp-list-toolbar">
+					<p class="mp-results-count">{filtered.length} məhsul</p>
+					<button type="button" class="mp-filter-toggle-btn" onclick={openFilters}>
+						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+						Filtrlər
+					</button>
+				</div>
+
 				{#if filtered.length > 0}
 					<div class="mp-product-grid">
 						{#each filtered as product}

@@ -1,4 +1,3 @@
-import { error } from '@sveltejs/kit';
 import { ApiClientError, getCategory, getProducts } from '$lib/api/client';
 
 /** @param {import('./$types').PageLoadEvent} event */
@@ -17,6 +16,7 @@ export async function load({ params }) {
 		if (e instanceof ApiClientError && e.status === 404) {
 			return { category: null, products: [] };
 		}
-		throw error(500, 'Kateqoriya yüklənə bilmədi');
+		console.error('Category: failed to load', params.slug, e);
+		return { category: null, products: [], apiUnavailable: true };
 	}
 }

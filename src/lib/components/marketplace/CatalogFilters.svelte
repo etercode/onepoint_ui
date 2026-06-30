@@ -9,6 +9,7 @@
 	 *   collection: string,
 	 *   inStockOnly: boolean,
 	 *   onSaleOnly: boolean,
+	 *   filtersOpen?: boolean,
 	 *   priceMin: number,
 	 *   priceMax: number,
 	 *   collections: string[],
@@ -24,6 +25,7 @@
 		collection = $bindable(''),
 		inStockOnly = $bindable(false),
 		onSaleOnly = $bindable(false),
+		filtersOpen = $bindable(false),
 		priceMin,
 		priceMax,
 		collections,
@@ -36,7 +38,7 @@
 	const displayMax = $derived(maxPrice);
 </script>
 
-<details class="mp-filters-wrap" open>
+<details class="mp-filters-wrap" id="catalog-filters" bind:open={filtersOpen}>
 	<summary class="mp-filters-toggle">Filtrlər</summary>
 	<aside class="mp-filters">
 	<div class="mp-filters-head">

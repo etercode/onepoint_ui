@@ -22,6 +22,7 @@
 	let collection = $state('');
 	let inStockOnly = $state(false);
 	let onSaleOnly = $state(false);
+	let filtersOpen = $state(false);
 
 	$effect(() => {
 		const b = bounds;
@@ -51,6 +52,11 @@
 		inStockOnly = defaults.inStockOnly;
 		onSaleOnly = defaults.onSaleOnly;
 	}
+
+	function openFilters() {
+		filtersOpen = true;
+		document.getElementById('catalog-filters')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+	}
 </script>
 
 <svelte:head>
@@ -72,6 +78,7 @@
 			bind:collection
 			bind:inStockOnly
 			bind:onSaleOnly
+			bind:filtersOpen
 			priceMin={bounds.min}
 			priceMax={bounds.max}
 			collections={collectionOptions}
@@ -79,8 +86,15 @@
 			onreset={resetFilters}
 		/>
 
-		<div>
-			<p class="mp-results-count">{filtered.length} məhsul tapıldı</p>
+		<div class="mp-category-main">
+			<div class="mp-list-toolbar">
+				<p class="mp-results-count">{filtered.length} məhsul tapıldı</p>
+				<button type="button" class="mp-filter-toggle-btn" onclick={openFilters}>
+					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+					Filtrlər
+				</button>
+			</div>
+
 			{#if filtered.length > 0}
 				<div class="mp-product-grid">
 					{#each filtered as product}

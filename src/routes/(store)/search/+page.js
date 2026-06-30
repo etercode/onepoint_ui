@@ -7,6 +7,11 @@ export async function load({ url }) {
 		return { query: '', results: [], total: 0 };
 	}
 
-	const { items, total } = await getProducts({ q: query });
-	return { query, results: items, total };
+	try {
+		const { items, total } = await getProducts({ q: query });
+		return { query, results: items, total };
+	} catch (e) {
+		console.error('Search: failed to load', query, e);
+		return { query, results: [], total: 0, apiUnavailable: true };
+	}
 }

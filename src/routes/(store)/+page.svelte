@@ -36,7 +36,7 @@
 				<span>✓ 12 aya böl</span>
 			</div>
 		</div>
-		<div class="mp-hero-visual">
+		<div class="mp-hero-visual" aria-label="Seçilmiş məhsullar">
 			<div class="mp-hero-card mp-hero-card-1">
 				<img src="https://embawood.az/image/catalog/Sofa%20set/Lena/lena%203%20yerli_2.png" alt="Lena divan" />
 				<span>Lena divan · 817 ₼</span>

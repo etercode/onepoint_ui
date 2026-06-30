@@ -1,4 +1,3 @@
-import { error } from '@sveltejs/kit';
 import { ApiClientError, getCollection, getCollections, getProducts } from '$lib/api/client';
 
 /** @param {import('./$types').PageLoadEvent} event */
@@ -19,6 +18,7 @@ export async function load({ params }) {
 		if (e instanceof ApiClientError && e.status === 404) {
 			return { collection: null, collections: [], products: [] };
 		}
-		throw error(500, 'Kolleksiya yüklənə bilmədi');
+		console.error('Collection: failed to load', params.slug, e);
+		return { collection: null, collections: [], products: [], apiUnavailable: true };
 	}
 }
