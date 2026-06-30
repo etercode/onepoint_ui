@@ -1,0 +1,12 @@
+services:
+  ui:
+    build:
+      context: .
+      args:
+        VITE_API_URL: https://miravi.devl0pr.com
+    container_name: onepoint-ui
+    restart: unless-stopped
+    extra_hosts:
+      - "miravi.devl0pr.com:host-gateway"
+    ports:
+      - "127.0.0.1:8082:3000"
