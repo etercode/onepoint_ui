@@ -47,6 +47,8 @@
 
 html {
 	font-size: var(--font-size-base);
+	-webkit-text-size-adjust: 100%;
+	text-size-adjust: 100%;
 }
 
 html,

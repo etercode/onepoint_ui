@@ -36,7 +36,9 @@
 	const displayMax = $derived(maxPrice);
 </script>
 
-<aside class="mp-filters">
+<details class="mp-filters-wrap" open>
+	<summary class="mp-filters-toggle">Filtrlər</summary>
+	<aside class="mp-filters">
 	<div class="mp-filters-head">
 		<h3>Filtrlər</h3>
 		<button type="button" class="mp-filters-reset" onclick={onreset}>Sıfırla</button>
@@ -115,4 +117,5 @@
 			Yalnız endirimli
 		</label>
 	</section>
-</aside>
+	</aside>
+</details>

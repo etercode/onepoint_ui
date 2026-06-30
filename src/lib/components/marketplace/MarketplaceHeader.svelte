@@ -30,8 +30,8 @@
 			{#if auth.isAuthenticated}
 				<UserMenu onLogout={onLogout} />
 			{:else}
-				<a href="/login" class="mp-link-btn">Daxil ol</a>
-				<a href="/register" class="mp-primary-btn">Qeydiyyat</a>
+				<a href="/login" class="mp-link-btn mp-header-login">Daxil ol</a>
+				<a href="/register" class="mp-primary-btn mp-header-register">Qeydiyyat</a>
 			{/if}
 		</div>
 	</div>
