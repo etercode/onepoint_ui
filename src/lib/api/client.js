@@ -17,8 +17,7 @@ async function apiBase() {
 	if (browser) {
 		return import.meta.env.VITE_API_URL ?? DEFAULT_API_URL;
 	}
-	const { env } = await import('$env/dynamic/private');
-	return env.API_URL ?? import.meta.env.VITE_API_URL ?? DEFAULT_API_URL;
+	return process.env.API_URL ?? import.meta.env.VITE_API_URL ?? DEFAULT_API_URL;
 }
 
 /** @param {Response} response */
