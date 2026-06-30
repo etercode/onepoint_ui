@@ -9,6 +9,7 @@ import { getAccessToken } from '$lib/auth/session';
 	 *   username: string,
 	 *   name: string,
 	 *   lastname: string,
+	 *   roles?: string[],
 	 *   timezone?: string | null,
 	 *   language?: string | null,
 	 *   birthday?: string | null,

@@ -1,15 +1,13 @@
 <script>
 	import StatCard from '$lib/components/admin/StatCard.svelte';
-	import {
-		formatPrice,
-		getDashboardStats,
-		getRecentOrders,
-		getTopProducts,
-		orderStatuses
-	} from '$lib/admin/data';
-	const stats = getDashboardStats();
-	const orders = getRecentOrders();
-	const topProducts = getTopProducts();
+	import { formatPrice, orderStatusPillClass, orderStatuses } from '$lib/admin/data';
+
+	let { data } = $props();
+
+	const dashboard = $derived(data.dashboard);
+	const stats = $derived(dashboard?.stats ?? {});
+	const recentOrders = $derived(dashboard?.recentOrders ?? []);
+	const topProducts = $derived(dashboard?.topProducts ?? []);
 </script>
 
 <svelte:head>
@@ -21,14 +19,25 @@
 		<h1>Xoş gəlmisiniz</h1>
 		<p>Bu günün biznes göstəriciləri və son fəaliyyət</p>
 	</div>
-	<a href="/admin/products" class="adm-btn adm-btn-primary">+ Yeni məhsul</a>
+	<a href="/admin/products/new" class="adm-btn adm-btn-primary">+ Yeni məhsul</a>
 </div>
 
+{#if data.apiUnavailable}
+	<div class="adm-alert adm-alert-warn" role="status">Panel məlumatı yüklənmədi.</div>
+{/if}
+
 <div class="adm-stats">
-	<StatCard label="Gəlir (ay)" value={formatPrice(stats.revenue)} icon="₼" iconClass="adm-stat-icon-green" trend="+12%" />
-	<StatCard label="Sifarişlər" value={stats.orders} icon="📦" iconClass="adm-stat-icon-indigo" trend="+8%" />
-	<StatCard label="Aktiv məhsul" value={stats.products} icon="🛋️" iconClass="adm-stat-icon-blue" />
-	<StatCard label="Yeni konsultasiya" value={stats.consultations} icon="💬" iconClass="adm-stat-icon-amber" trend={stats.consultations > 0 ? 'Yeni' : '0'} trendUp={stats.consultations === 0} />
+	<StatCard label="Gəlir (ay)" value={formatPrice(stats.revenue ?? 0)} icon="₼" iconClass="adm-stat-icon-green" />
+	<StatCard label="Sifarişlər" value={stats.orders ?? 0} icon="📦" iconClass="adm-stat-icon-indigo" />
+	<StatCard label="Aktiv məhsul" value={stats.products ?? 0} icon="🛋️" iconClass="adm-stat-icon-blue" />
+	<StatCard
+		label="Yeni konsultasiya"
+		value={stats.consultations ?? 0}
+		icon="💬"
+		iconClass="adm-stat-icon-amber"
+		trend={(stats.consultations ?? 0) > 0 ? 'Yeni' : '0'}
+		trendUp={(stats.consultations ?? 0) === 0}
+	/>
 </div>
 
 <div class="adm-grid-2">
@@ -48,16 +57,20 @@
 					</tr>
 				</thead>
 				<tbody>
-					{#each orders as order}
+					{#each recentOrders as order}
 						<tr>
-							<td><strong>{order.id}</strong></td>
+							<td><strong>{order.orderNumber}</strong></td>
 							<td>{order.customer}</td>
 							<td>{formatPrice(order.total)}</td>
 							<td>
-								<span class="adm-pill adm-pill-{orderStatuses[order.status].tone === 'success' ? 'success' : orderStatuses[order.status].tone === 'warning' ? 'warning' : orderStatuses[order.status].tone === 'danger' ? 'danger' : 'info'}">
-									{orderStatuses[order.status].label}
+								<span class="adm-pill adm-pill-{orderStatusPillClass(order.status)}">
+									{orderStatuses[/** @type {keyof typeof orderStatuses} */ (order.status)]?.label ?? order.status}
 								</span>
 							</td>
+						</tr>
+					{:else}
+						<tr>
+							<td colspan="4" class="adm-empty">Sifariş yoxdur.</td>
 						</tr>
 					{/each}
 				</tbody>
@@ -71,7 +84,7 @@
 			<a href="/admin/products">Kataloq →</a>
 		</div>
 		<ul class="adm-activity">
-			{#each topProducts as product, i}
+			{#each topProducts as product}
 				<li>
 					<span class="adm-activity-dot" style="background: var(--adm-accent);"></span>
 					<div>
@@ -79,6 +92,8 @@
 						<span>{product.sales} satış · {formatPrice(product.revenue)}</span>
 					</div>
 				</li>
+			{:else}
+				<li class="adm-empty">Məhsul yoxdur.</li>
 			{/each}
 		</ul>
 	</section>

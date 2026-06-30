@@ -1,6 +1,5 @@
 <script>
 	import { COMPANY } from '$lib/data/marketplace';
-	import { getAdminEmails } from '$lib/admin/config';
 	import { auth } from '$lib/auth/auth.svelte';
 </script>
 
@@ -33,6 +32,7 @@
 				<p><strong>Ad:</strong> {auth.user.name} {auth.user.lastname}</p>
 				<p><strong>E-poçt:</strong> {auth.user.email}</p>
 				<p><strong>İstifadəçi:</strong> @{auth.user.username}</p>
+				<p><strong>Rollar:</strong> {auth.user.roles?.length ? auth.user.roles.join(', ') : '—'}</p>
 			{/if}
 			<a href="/settings" class="adm-btn adm-btn-ghost" style="margin-top: 1rem;">Profil parametrləri</a>
 		</div>
@@ -42,17 +42,9 @@
 <section class="adm-panel" style="margin-top: 1rem;">
 	<div class="adm-panel-head"><h2>Giriş icazələri</h2></div>
 	<div class="adm-panel-body-pad">
-		{#if getAdminEmails().length > 0}
-			<p style="color: var(--adm-muted); font-size: 0.875rem;">Yalnız bu e-poçtlar admin panelinə daxil ola bilər:</p>
-			<ul>
-				{#each getAdminEmails() as email}
-					<li><code>{email}</code></li>
-				{/each}
-			</ul>
-		{:else}
-			<div class="adm-alert adm-alert-warn">
-				VITE_ADMIN_EMAILS təyin olunmayıb — hazırda hər autentifikasiya olunmuş istifadəçi adminə daxil ola bilər (yalnız inkişaf üçün).
-			</div>
-		{/if}
+		<p style="color: var(--adm-muted); font-size: 0.875rem;">
+			Admin panelə yalnız <code>ROLE_ADMIN</code> roluna malik istifadəçilər daxil ola bilər.
+			Rol serverdə <code>app:user:grant-admin</code> konsol əmri ilə verilir.
+		</p>
 	</div>
 </section>

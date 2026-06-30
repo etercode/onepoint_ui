@@ -245,3 +245,163 @@ export async function getCollections({ featured } = {}) {
 export async function getCollection(slug) {
 	return request(`/api/collections/${slug}`);
 }
+
+// ——— Admin catalog (requires ROLE_ADMIN) ———
+
+/** @param {Record<string, unknown>} data */
+export async function createProduct(data) {
+	return request('/api/admin/products', {
+		method: 'POST',
+		body: JSON.stringify(data)
+	}, true);
+}
+
+/** @param {number | string} id @param {Record<string, unknown>} data */
+export async function updateProduct(id, data) {
+	return request(`/api/admin/products/${id}`, {
+		method: 'PUT',
+		body: JSON.stringify(data)
+	}, true);
+}
+
+/** @param {number | string} id */
+export async function deleteProduct(id) {
+	return request(`/api/admin/products/${id}`, { method: 'DELETE' }, true);
+}
+
+/** @param {number | string} id @param {File} file */
+export async function uploadProductImage(id, file) {
+	const form = new FormData();
+	form.append('image', file);
+	return request(`/api/admin/products/${id}/images/upload`, {
+		method: 'POST',
+		body: form
+	}, true);
+}
+
+/** @param {number | string} productId @param {string} url */
+export async function addProductImageUrl(productId, url) {
+	return request(`/api/admin/products/${productId}/images`, {
+		method: 'POST',
+		body: JSON.stringify({ url })
+	}, true);
+}
+
+/** @param {number | string} productId @param {number[]} ids */
+export async function reorderProductImages(productId, ids) {
+	return request(`/api/admin/products/${productId}/images/order`, {
+		method: 'PUT',
+		body: JSON.stringify({ ids })
+	}, true);
+}
+
+/** @param {number | string} productId @param {number | string} imageId */
+export async function deleteProductImage(productId, imageId) {
+	return request(`/api/admin/products/${productId}/images/${imageId}`, {
+		method: 'DELETE'
+	}, true);
+}
+
+/** @param {Record<string, unknown>} data */
+export async function createCategory(data) {
+	return request('/api/admin/categories', {
+		method: 'POST',
+		body: JSON.stringify(data)
+	}, true);
+}
+
+/** @param {number | string} id @param {Record<string, unknown>} data */
+export async function updateCategory(id, data) {
+	return request(`/api/admin/categories/${id}`, {
+		method: 'PUT',
+		body: JSON.stringify(data)
+	}, true);
+}
+
+/** @param {number | string} id */
+export async function deleteCategory(id) {
+	return request(`/api/admin/categories/${id}`, { method: 'DELETE' }, true);
+}
+
+/** @param {Record<string, unknown>} data */
+export async function createCollection(data) {
+	return request('/api/admin/collections', {
+		method: 'POST',
+		body: JSON.stringify(data)
+	}, true);
+}
+
+/** @param {number | string} id @param {Record<string, unknown>} data */
+export async function updateCollection(id, data) {
+	return request(`/api/admin/collections/${id}`, {
+		method: 'PUT',
+		body: JSON.stringify(data)
+	}, true);
+}
+
+/** @param {number | string} id */
+export async function deleteCollection(id) {
+	return request(`/api/admin/collections/${id}`, { method: 'DELETE' }, true);
+}
+
+// ——— Public consultations ———
+
+/** @param {{ name: string, phone: string, room: string, message?: string }} data */
+export async function submitConsultation(data) {
+	return request('/api/consultations', {
+		method: 'POST',
+		body: JSON.stringify(data)
+	});
+}
+
+// ——— Admin orders, customers, consultations, dashboard ———
+
+/** @param {Record<string, string | number | undefined>} [params] */
+function adminQuery(params = {}) {
+	const search = new URLSearchParams();
+	for (const [key, value] of Object.entries(params)) {
+		if (value === undefined || value === null || value === '') continue;
+		search.set(key, String(value));
+	}
+	const qs = search.toString();
+	return qs ? `?${qs}` : '';
+}
+
+/** @param {Record<string, string | number | undefined>} [params] */
+export async function getOrders(params = {}) {
+	return request(`/api/admin/orders${adminQuery(params)}`, {}, true);
+}
+
+/** @param {number | string} id */
+export async function getOrder(id) {
+	return request(`/api/admin/orders/${id}`, {}, true);
+}
+
+/** @param {number | string} id @param {string} status */
+export async function updateOrderStatus(id, status) {
+	return request(`/api/admin/orders/${id}`, {
+		method: 'PATCH',
+		body: JSON.stringify({ status })
+	}, true);
+}
+
+export async function getCustomers() {
+	return request('/api/admin/customers', {}, true);
+}
+
+/** @param {Record<string, string | undefined>} [params] */
+export async function getConsultations(params = {}) {
+	return request(`/api/admin/consultations${adminQuery(params)}`, {}, true);
+}
+
+/** @param {number | string} id @param {string} status */
+export async function updateConsultationStatus(id, status) {
+	return request(`/api/admin/consultations/${id}`, {
+		method: 'PATCH',
+		body: JSON.stringify({ status })
+	}, true);
+}
+
+export async function getDashboard() {
+	return request('/api/admin/dashboard', {}, true);
+}

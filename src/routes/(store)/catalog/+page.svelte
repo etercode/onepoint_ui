@@ -7,6 +7,7 @@
 	} from '$lib/catalog/filters';
 	import Breadcrumbs from '$lib/components/marketplace/Breadcrumbs.svelte';
 	import CatalogFilters from '$lib/components/marketplace/CatalogFilters.svelte';
+	import CategoryNav from '$lib/components/marketplace/CategoryNav.svelte';
 	import PageHero from '$lib/components/marketplace/PageHero.svelte';
 	import ProductCard from '$lib/components/marketplace/ProductCard.svelte';
 
@@ -18,7 +19,6 @@
 
 	let minPrice = $state(0);
 	let maxPrice = $state(0);
-	let category = $state('');
 	let collection = $state('');
 	let inStockOnly = $state(false);
 	let onSaleOnly = $state(false);
@@ -36,7 +36,7 @@
 		filterProducts(allProducts, {
 			minPrice,
 			maxPrice,
-			category,
+			category: '',
 			collection,
 			inStockOnly,
 			onSaleOnly
@@ -47,7 +47,6 @@
 		const defaults = defaultFilters(bounds);
 		minPrice = defaults.minPrice;
 		maxPrice = defaults.maxPrice;
-		category = defaults.category;
 		collection = defaults.collection;
 		inStockOnly = defaults.inStockOnly;
 		onSaleOnly = defaults.onSaleOnly;
@@ -69,22 +68,27 @@
 	{/snippet}
 </PageHero>
 
+<CategoryNav categories={data.navCategories} activeSlug={null} mode="rail" />
+
 <main class="mp-inner-main">
-	<div class="mp-container mp-inner-grid">
-		<CatalogFilters
-			bind:minPrice
-			bind:maxPrice
-			bind:category
-			bind:collection
-			bind:inStockOnly
-			bind:onSaleOnly
-			bind:filtersOpen
-			priceMin={bounds.min}
-			priceMax={bounds.max}
-			collections={collectionOptions}
-			categories={data.navCategories}
-			onreset={resetFilters}
-		/>
+	<div class="mp-container mp-inner-grid mp-category-layout">
+		<div class="mp-filter-column">
+			<CategoryNav categories={data.navCategories} activeSlug={null} mode="sidebar" />
+
+			<CatalogFilters
+				bind:minPrice
+				bind:maxPrice
+				bind:collection
+				bind:inStockOnly
+				bind:onSaleOnly
+				bind:filtersOpen
+				lockCategory="all"
+				priceMin={bounds.min}
+				priceMax={bounds.max}
+				collections={collectionOptions}
+				onreset={resetFilters}
+			/>
+		</div>
 
 		<div class="mp-category-main">
 			<div class="mp-list-toolbar">

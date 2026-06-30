@@ -2,6 +2,7 @@
 	import { getProducts } from '$lib/api/client';
 	import { cart } from '$lib/cart/store.svelte';
 	import { formatPrice } from '$lib/data/marketplace';
+	import { resolveApiUrl } from '$lib/config';
 	import Breadcrumbs from '$lib/components/marketplace/Breadcrumbs.svelte';
 	import PageHero from '$lib/components/marketplace/PageHero.svelte';
 
@@ -65,7 +66,7 @@
 					{#each lines as line (line.productId)}
 						<article class="mp-cart-line">
 							<a href="/product/{line.product.id}" class="mp-cart-line-img">
-								<img src={line.product.image} alt={line.product.name} />
+								<img src={resolveApiUrl(line.product.image)} alt={line.product.name} />
 							</a>
 							<div class="mp-cart-line-body">
 								<a href="/product/{line.product.id}" class="mp-cart-line-title">{line.product.name}</a>

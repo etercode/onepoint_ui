@@ -1,5 +1,9 @@
 <script>
-	import { formatPrice, mockCustomers } from '$lib/admin/data';
+	import { formatPrice } from '$lib/admin/data';
+
+	let { data } = $props();
+
+	const customers = $derived(data.customers ?? []);
 </script>
 
 <svelte:head>
@@ -12,6 +16,10 @@
 		<p>Qeydiyyatdan keçmiş alıcılar</p>
 	</div>
 </div>
+
+{#if data.apiUnavailable}
+	<div class="adm-alert adm-alert-warn" role="status">Müştəri siyahısı yüklənmədi.</div>
+{/if}
 
 <section class="adm-panel">
 	<div class="adm-table-wrap">
@@ -26,13 +34,17 @@
 				</tr>
 			</thead>
 			<tbody>
-				{#each mockCustomers as customer}
+				{#each customers as customer}
 					<tr>
 						<td><strong>{customer.name}</strong></td>
 						<td>{customer.email}</td>
 						<td>{customer.orders}</td>
 						<td><strong>{formatPrice(customer.spent)}</strong></td>
 						<td>{customer.joined}</td>
+					</tr>
+				{:else}
+					<tr>
+						<td colspan="5" class="adm-empty">Müştəri yoxdur.</td>
 					</tr>
 				{/each}
 			</tbody>

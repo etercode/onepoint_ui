@@ -7,6 +7,7 @@
 	import Breadcrumbs from '$lib/components/marketplace/Breadcrumbs.svelte';
 	import AddToCartButton from '$lib/components/marketplace/AddToCartButton.svelte';
 	import ProductCard from '$lib/components/marketplace/ProductCard.svelte';
+	import ProductGallery from '$lib/components/marketplace/ProductGallery.svelte';
 
 	let { data } = $props();
 
@@ -31,9 +32,7 @@
 			/>
 
 			<div class="mp-product-detail">
-				<div class="mp-product-gallery">
-					<img src={product.image} alt={product.name} />
-				</div>
+				<ProductGallery {product} />
 
 				<div class="mp-product-info">
 					<p class="mp-page-eyebrow">{product.collection} kolleksiyası</p>

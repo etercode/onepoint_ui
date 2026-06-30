@@ -1,19 +1,31 @@
 <script>
 	import Breadcrumbs from '$lib/components/marketplace/Breadcrumbs.svelte';
-	import { saveConsultation } from '$lib/admin/consultations';
 	import PageHero from '$lib/components/marketplace/PageHero.svelte';
+	import { ApiClientError, submitConsultation } from '$lib/api/client';
+	import { consultationRoomOptions } from '$lib/consultation/constants';
 
 	let name = $state('');
 	let phone = $state('');
 	let room = $state('living-room');
 	let message = $state('');
 	let submitted = $state(false);
+	let error = $state('');
+	let submitting = $state(false);
 
 	/** @param {SubmitEvent} event */
-	function handleSubmit(event) {
+	async function handleSubmit(event) {
 		event.preventDefault();
-		saveConsultation({ name, phone, room, message });
-		submitted = true;
+		error = '';
+		submitting = true;
+
+		try {
+			await submitConsultation({ name, phone, room, message });
+			submitted = true;
+		} catch (err) {
+			error = err instanceof ApiClientError ? err.message : 'Göndərmək alınmadı. Yenidən cəhd edin.';
+		} finally {
+			submitting = false;
+		}
 	}
 </script>
 
@@ -34,6 +46,10 @@
 				Təşəkkürlər, {name}! Tezliklə sizinlə əlaqə saxlayacağıq.
 			</div>
 		{:else}
+			{#if error}
+				<div class="mp-form-error" role="alert">{error}</div>
+			{/if}
+
 			<form class="mp-form" onsubmit={handleSubmit}>
 				<label>
 					Ad, soyad
@@ -46,18 +62,18 @@
 				<label>
 					Otaq növü
 					<select name="room" bind:value={room}>
-						<option value="living-room">Qonaq otağı</option>
-						<option value="bedroom">Yataq otağı</option>
-						<option value="kitchen">Mətbəx / yemək otağı</option>
-						<option value="kids">Uşaq otağı</option>
-						<option value="office">Ev ofisi</option>
+						{#each consultationRoomOptions as opt}
+							<option value={opt.value}>{opt.label}</option>
+						{/each}
 					</select>
 				</label>
 				<label>
 					Qısa təsvir
 					<textarea name="message" bind:value={message} rows="4" placeholder="Ölçü, üslub, büdcə haqqında qısa məlumat…"></textarea>
 				</label>
-				<button type="submit" class="mp-btn-primary">Göndər</button>
+				<button type="submit" class="mp-btn-primary" disabled={submitting}>
+					{submitting ? 'Göndərilir…' : 'Göndər'}
+				</button>
 			</form>
 		{/if}
 	</div>

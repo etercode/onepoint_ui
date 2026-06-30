@@ -28,8 +28,8 @@
 	</PageHero>
 
 	<main class="mp-inner-main">
-		<div class="mp-container mp-inner-grid">
-			<aside class="mp-sidebar">
+		<div class="mp-container mp-inner-grid mp-collection-layout">
+			<aside class="mp-sidebar mp-sidebar-desktop">
 				<h3>Kolleksiyalar</h3>
 				<nav class="mp-sidebar-nav">
 					{#each data.collections as col}
@@ -38,12 +38,12 @@
 				</nav>
 			</aside>
 
-			<div>
+			<div class="mp-category-main">
 				<p class="mp-results-count">{products.length} məhsul</p>
 				{#if products.length > 0}
 					<div class="mp-product-grid">
 						{#each products as product}
-							<ProductCard {product} />
+							<ProductCard {product} context="collection" />
 						{/each}
 					</div>
 				{:else}

@@ -1,5 +1,4 @@
 <script>
-	import { categoryHref } from '$lib/data/marketplace';
 	import {
 		defaultFilters,
 		filterProducts,
@@ -8,6 +7,7 @@
 	} from '$lib/catalog/filters';
 	import Breadcrumbs from '$lib/components/marketplace/Breadcrumbs.svelte';
 	import CatalogFilters from '$lib/components/marketplace/CatalogFilters.svelte';
+	import CategoryNav from '$lib/components/marketplace/CategoryNav.svelte';
 	import PageHero from '$lib/components/marketplace/PageHero.svelte';
 	import ProductCard from '$lib/components/marketplace/ProductCard.svelte';
 
@@ -80,29 +80,12 @@
 		{/snippet}
 	</PageHero>
 
-	<nav class="mp-category-rail mp-container" aria-label="Kateqoriyalar">
-		<a href="/catalog" class="mp-category-rail-item">Hamısı</a>
-		{#each data.navCategories as cat}
-			<a
-				href={categoryHref(cat.slug)}
-				class="mp-category-rail-item"
-				class:active={cat.slug === category.slug}
-			>{cat.name}</a>
-		{/each}
-	</nav>
+	<CategoryNav categories={data.navCategories} activeSlug={category.slug} mode="rail" />
 
 	<main class="mp-inner-main">
 		<div class="mp-container mp-inner-grid mp-category-layout">
 			<div class="mp-filter-column">
-				<aside class="mp-sidebar mp-sidebar-desktop">
-					<h3>Kateqoriyalar</h3>
-					<nav class="mp-sidebar-nav">
-						<a href="/catalog">Hamısı</a>
-						{#each data.navCategories as cat}
-							<a href={categoryHref(cat.slug)} class:active={cat.slug === category.slug}>{cat.name}</a>
-						{/each}
-					</nav>
-				</aside>
+				<CategoryNav categories={data.navCategories} activeSlug={category.slug} mode="sidebar" />
 
 				<CatalogFilters
 					bind:minPrice
@@ -131,7 +114,7 @@
 				{#if filtered.length > 0}
 					<div class="mp-product-grid">
 						{#each filtered as product}
-							<ProductCard {product} />
+							<ProductCard {product} context="category" />
 						{/each}
 					</div>
 				{:else}

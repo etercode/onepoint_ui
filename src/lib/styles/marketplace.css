@@ -841,6 +841,17 @@
 	box-shadow: var(--mp-shadow-lg);
 }
 
+.mp-product-cart {
+	position: absolute;
+	top: 0.625rem;
+	right: 0.625rem;
+	z-index: 2;
+}
+
+.mp-product-cart .mp-add-cart-btn {
+	position: static;
+}
+
 .mp-product-featured {
 	border-color: rgb(196 93 44 / 0.2);
 }

@@ -1,15 +1,25 @@
 <script>
 	import { formatPrice } from '$lib/data/marketplace';
+	import { resolveApiUrl } from '$lib/config';
 	import AddToCartButton from '$lib/components/marketplace/AddToCartButton.svelte';
 
-	/** @type {{ product: Record<string, unknown>, featured?: boolean }} */
-	let { product, featured = false } = $props();
+	/** @type {{ product: Record<string, unknown>, featured?: boolean, context?: 'category' | 'collection' }} */
+	let { product, featured = false, context } = $props();
+
+	const imageUrl = $derived(resolveApiUrl(product.image));
+	const metaLine = $derived(
+		context === 'category'
+			? `${product.collection} kolleksiyası`
+			: context === 'collection'
+				? product.category
+				: `${product.category} · ${product.collection} kolleksiyası`
+	);
 </script>
 
 <article class="mp-product" class:mp-product-featured={featured}>
 	<a href="/product/{product.id}" class="mp-product-link">
 		<div class="mp-product-media">
-			<img src={product.image} alt={product.name} loading="lazy" />
+			<img src={imageUrl} alt={product.name} loading="lazy" />
 			{#if product.onSale}
 				<span class="mp-badge mp-badge-sale">Endirim</span>
 			{:else if product.isNew}
@@ -25,7 +35,7 @@
 				{/if}
 			</div>
 			<h3 class="mp-product-title">{product.name}</h3>
-			<p class="mp-product-meta">{product.category} · {product.collection} kolleksiyası</p>
+			<p class="mp-product-meta">{metaLine}</p>
 
 			<div class="mp-product-tags">
 				{#if product.inStock}
@@ -39,6 +49,8 @@
 		</div>
 	</a>
 	{#if product.inStock}
-		<AddToCartButton {product} compact />
+		<div class="mp-product-cart">
+			<AddToCartButton {product} compact />
+		</div>
 	{/if}
 </article>
