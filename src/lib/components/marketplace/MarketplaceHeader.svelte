@@ -14,9 +14,6 @@
 
 	const pathname = $derived($page.url.pathname);
 	const showBack = $derived(pathname !== '/' && !pathname.startsWith('/admin'));
-	const showMobileBanner = $derived(
-		pathname !== '/' && !pathname.startsWith('/category/')
-	);
 
 	beforeNavigate(() => {
 		catalogOpen = false;
@@ -59,19 +56,4 @@
 			</div>
 		</div>
 	</div>
-
-	{#if showMobileBanner}
-		<a href="/catalog" class="mp-header-banner">
-			<img
-				src="https://embawood.az/image/catalog/Sofa%20set/Lena/lena%203%20yerli_2.png"
-				alt=""
-				loading="lazy"
-			/>
-			<div class="mp-header-banner-overlay">
-				<p class="mp-header-banner-eyebrow">{COMPANY.name}</p>
-				<p class="mp-header-banner-title">Premium mebel kolleksiyası</p>
-				<span class="mp-header-banner-cta">Kataloqa bax →</span>
-			</div>
-		</a>
-	{/if}
 </header>
