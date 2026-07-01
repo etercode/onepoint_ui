@@ -67,18 +67,12 @@
 							<dt>Kolleksiya</dt>
 							<dd><a href={collectionHref(product.collectionSlug)}>{product.collection}</a></dd>
 						</div>
-						<div>
-							<dt>Material</dt>
-							<dd>{product.material}</dd>
-						</div>
-						<div>
-							<dt>Rəng</dt>
-							<dd>{product.color}</dd>
-						</div>
-						<div>
-							<dt>Ölçü</dt>
-							<dd>{product.dimensions}</dd>
-						</div>
+						{#each product.specs ?? [] as spec (spec.code)}
+							<div>
+								<dt>{spec.label}</dt>
+								<dd>{spec.value}</dd>
+							</div>
+						{/each}
 					</dl>
 
 					<p class="mp-product-desc">{product.description}</p>

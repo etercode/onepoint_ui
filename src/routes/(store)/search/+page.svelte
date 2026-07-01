@@ -28,6 +28,13 @@
 			<button type="submit" class="mp-search-btn">Axtar</button>
 		</form>
 
+		{#if data.query && data.suggestion}
+			<p class="mp-search-didyoumean">
+				Bunu nəzərdə tuturdunuz:
+				<a href="/search?q={encodeURIComponent(data.suggestion)}">{data.suggestion}</a>?
+			</p>
+		{/if}
+
 		{#if !data.query}
 			<div class="mp-section mp-section-compact" style="padding-left: 0; padding-right: 0;">
 				<h2 class="mp-section-title-sm">Populyar axtarışlar</h2>
@@ -58,5 +65,16 @@
 	.mp-search-page {
 		max-width: 36rem;
 		margin-bottom: 2rem;
+	}
+
+	.mp-search-didyoumean {
+		margin: 0 0 1.5rem;
+		font-size: 0.95rem;
+		color: var(--mp-muted);
+	}
+
+	.mp-search-didyoumean a {
+		font-weight: 700;
+		color: var(--mp-primary);
 	}
 </style>

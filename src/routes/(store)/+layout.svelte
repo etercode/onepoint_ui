@@ -39,6 +39,7 @@
 	<MarketplaceHeader
 		categories={data.navCategories}
 		collections={data.navCollections}
+		catalogMenu={data.catalogMenu}
 		onLogout={handleLogout}
 	/>
 	{@render children()}

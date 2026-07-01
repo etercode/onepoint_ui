@@ -1,7 +1,14 @@
 <script>
 	import { goto, invalidateAll } from '$app/navigation';
-	import { createProduct, updateProduct } from '$lib/api/client';
+	import {
+		addProductImageUrl,
+		createProduct,
+		updateProduct,
+		uploadProductImage
+	} from '$lib/api/client';
 	import { formatAdminError } from '$lib/admin/api-errors';
+	import ProductImageStager from '$lib/components/admin/ProductImageStager.svelte';
+	import ProductAttributeFields from '$lib/components/admin/ProductAttributeFields.svelte';
 
 	/** @type {{
 	 *   product?: Record<string, unknown> | null,
@@ -20,31 +27,45 @@
 			categoryId: p?.categoryId != null ? String(p.categoryId) : '',
 			collectionId: p?.collectionId != null ? String(p.collectionId) : '',
 			oldPrice: p?.oldPrice != null ? String(p.oldPrice) : '',
-			onSale: Boolean(p?.onSale),
 			isNew: Boolean(p?.isNew),
 			inStock: p?.inStock !== false,
 			freeDelivery: Boolean(p?.freeDelivery),
 			warrantyYears: p?.warrantyYears != null ? String(p.warrantyYears) : '2',
-			material: String(p?.material ?? ''),
-			color: String(p?.color ?? ''),
-			dimensions: String(p?.dimensions ?? ''),
 			description: String(p?.description ?? '')
 		};
 	}
 
+	/** @param {Record<string, unknown> | null | undefined} p */
+	function toAttrValues(p) {
+		/** @type {Record<string, unknown>} */
+		const out = {};
+		if (Array.isArray(p?.specs)) {
+			for (const spec of p.specs) {
+				if (spec?.code != null) out[spec.code] = spec.raw ?? '';
+			}
+		}
+		return out;
+	}
+
 	let form = $state(toForm(null));
+	/** @type {Record<string, unknown>} */
+	let attrValues = $state({});
 	let error = $state('');
 	let submitting = $state(false);
+	/** @type {import('svelte').ComponentProps<typeof ProductImageStager>['items']} */
+	let stagedImages = $state([]);
+	let uploadProgress = $state({ done: 0, total: 0 });
 
 	$effect(() => {
 		form = toForm(product);
+		attrValues = toAttrValues(product);
 	});
 
 	function buildPayload() {
 		const price = parseInt(form.price, 10);
 		const categoryId = parseInt(form.categoryId, 10);
 		const collectionId = parseInt(form.collectionId, 10);
-		const oldPriceRaw = form.oldPrice.trim();
+		const oldPriceRaw = String(form.oldPrice ?? '').trim();
 		const warrantyYears = parseInt(form.warrantyYears, 10);
 
 		return {
@@ -58,12 +79,17 @@
 			inStock: form.inStock,
 			freeDelivery: form.freeDelivery,
 			warrantyYears: Number.isFinite(warrantyYears) ? warrantyYears : 2,
-			material: form.material.trim() || null,
-			color: form.color.trim() || null,
-			dimensions: form.dimensions.trim() || null,
-			description: form.description.trim() || null
+			description: form.description.trim() || null,
+			attributes: attrValues
 		};
 	}
+
+	// "On sale" is automatic: a higher old price than the current price.
+	const willBeOnSale = $derived(() => {
+		const op = parseInt(String(form.oldPrice ?? ''), 10);
+		const p = parseInt(String(form.price ?? ''), 10);
+		return Number.isFinite(op) && Number.isFinite(p) && op > p;
+	});
 
 	/** @param {SubmitEvent} event */
 	async function handleSubmit(event) {
@@ -93,28 +119,39 @@
 			} else {
 				const created = await createProduct(payload);
 				const id = created?.id;
-				if (id != null) {
-					goto(`/admin/products/${id}/edit`);
-				} else {
+				if (id == null) {
 					goto('/admin/products');
+					return;
 				}
+				// Upload the staged gallery, in order, right after creation.
+				await uploadStagedImages(id);
+				goto(`/admin/products/${id}/edit`);
 			}
 		} catch (err) {
 			error = formatAdminError(err);
 		} finally {
 			submitting = false;
+			uploadProgress = { done: 0, total: 0 };
+		}
+	}
+
+	/** @param {number | string} productId */
+	async function uploadStagedImages(productId) {
+		if (!stagedImages.length) return;
+		uploadProgress = { done: 0, total: stagedImages.length };
+		for (const item of stagedImages) {
+			if (item.kind === 'file') {
+				await uploadProductImage(productId, item.file);
+			} else {
+				await addProductImageUrl(productId, item.url);
+			}
+			uploadProgress = { ...uploadProgress, done: uploadProgress.done + 1 };
 		}
 	}
 </script>
 
 {#if error}
 	<div class="adm-alert adm-alert-error" role="alert">{error}</div>
-{/if}
-
-{#if !isEdit}
-	<div class="adm-alert adm-alert-warn" role="status">
-		Şəkillər məhsul yaradıldıqdan sonra redaktə səhifəsində əlavə olunur.
-	</div>
 {/if}
 
 <form class="adm-form" onsubmit={handleSubmit}>
@@ -130,8 +167,15 @@
 		</div>
 
 		<div class="adm-form-field">
-			<label for="oldPrice">Köhnə qiymət</label>
-			<input id="oldPrice" type="number" min="0" step="1" bind:value={form.oldPrice} />
+			<label for="oldPrice">Köhnə qiymət (endirim üçün)</label>
+			<input id="oldPrice" type="number" min="0" step="1" placeholder="Boş = endirimsiz" bind:value={form.oldPrice} />
+			<p class="adm-field-hint">
+				{#if willBeOnSale()}
+					<span class="adm-hint-sale">✓ Endirimli göstəriləcək</span>
+				{:else}
+					Cari qiymətdən yüksək köhnə qiymət yazsanız məhsul avtomatik “Endirim”də olacaq.
+				{/if}
+			</p>
 		</div>
 
 		<div class="adm-form-field">
@@ -139,7 +183,7 @@
 			<select id="categoryId" required bind:value={form.categoryId}>
 				<option value="">Seçin…</option>
 				{#each categories as cat}
-					<option value={cat.id}>{cat.name}</option>
+					<option value={String(cat.id)}>{cat.name}</option>
 				{/each}
 			</select>
 		</div>
@@ -149,24 +193,9 @@
 			<select id="collectionId" required bind:value={form.collectionId}>
 				<option value="">Seçin…</option>
 				{#each collections as col}
-					<option value={col.id}>{col.name}</option>
+					<option value={String(col.id)}>{col.name}</option>
 				{/each}
 			</select>
-		</div>
-
-		<div class="adm-form-field">
-			<label for="material">Material</label>
-			<input id="material" type="text" bind:value={form.material} />
-		</div>
-
-		<div class="adm-form-field">
-			<label for="color">Rəng</label>
-			<input id="color" type="text" bind:value={form.color} />
-		</div>
-
-		<div class="adm-form-field adm-form-span-2">
-			<label for="dimensions">Ölçü</label>
-			<input id="dimensions" type="text" bind:value={form.dimensions} />
 		</div>
 
 		<div class="adm-form-field">
@@ -177,7 +206,6 @@
 		<div class="adm-form-field adm-form-checks">
 			<span class="adm-form-checks-label">Status</span>
 			<label class="adm-check"><input type="checkbox" bind:checked={form.inStock} /> Stokda</label>
-			<label class="adm-check"><input type="checkbox" bind:checked={form.onSale} /> Endirim</label>
 			<label class="adm-check"><input type="checkbox" bind:checked={form.isNew} /> Yeni</label>
 			<label class="adm-check"><input type="checkbox" bind:checked={form.freeDelivery} /> Pulsuz çatdırılma</label>
 		</div>
@@ -188,10 +216,36 @@
 		</div>
 	</div>
 
+	<div class="adm-form-images">
+		<ProductAttributeFields categoryId={form.categoryId} bind:values={attrValues} disabled={submitting} />
+	</div>
+
+	{#if !isEdit}
+		<div class="adm-form-images">
+			<ProductImageStager bind:items={stagedImages} disabled={submitting} />
+		</div>
+	{/if}
+
 	<div class="adm-form-actions">
 		<a href="/admin/products" class="adm-btn adm-btn-ghost">Ləğv et</a>
 		<button type="submit" class="adm-btn adm-btn-primary" disabled={submitting}>
-			{submitting ? 'Saxlanılır…' : isEdit ? 'Yenilə' : 'Yarat və şəkillər əlavə et'}
+			{#if submitting && uploadProgress.total > 0}
+				Şəkillər yüklənir… ({uploadProgress.done}/{uploadProgress.total})
+			{:else if submitting}
+				Saxlanılır…
+			{:else if isEdit}
+				Yenilə
+			{:else}
+				Məhsulu yarat
+			{/if}
 		</button>
 	</div>
 </form>
+
+<style>
+	.adm-form-images {
+		margin-top: 1.5rem;
+		padding-top: 1.5rem;
+		border-top: 1px solid var(--adm-border);
+	}
+</style>

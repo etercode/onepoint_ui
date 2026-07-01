@@ -229,7 +229,7 @@
 		position: relative;
 		border: 2px solid var(--adm-border);
 		border-radius: var(--adm-radius-sm);
-		background: #fff;
+		background: var(--adm-surface-2);
 		cursor: grab;
 		overflow: hidden;
 	}

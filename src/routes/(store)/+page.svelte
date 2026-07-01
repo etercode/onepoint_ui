@@ -7,6 +7,7 @@
 		popularSearches,
 		roomInspirations
 	} from '$lib/data/marketplace';
+	import { resolveApiUrl } from '$lib/config';
 	import ProductCard from '$lib/components/marketplace/ProductCard.svelte';
 
 	let { data } = $props();
@@ -74,7 +75,7 @@
 			{#each data.categories as cat}
 				<a href={categoryHref(cat.slug)} class="mp-category-card">
 					<div class="mp-category-img">
-						<img src={cat.image} alt={cat.name} loading="lazy" />
+						<img src={resolveApiUrl(cat.image)} alt={cat.name} loading="lazy" />
 					</div>
 					<div class="mp-category-info">
 						<h3>{cat.name}</h3>
@@ -140,7 +141,7 @@
 		<div class="mp-brand-grid">
 			{#each data.collections as col}
 				<a href={collectionHref(col.slug)} class="mp-brand-card">
-					<img class="mp-collection-thumb" src={col.image} alt={col.name} loading="lazy" />
+					<img class="mp-collection-thumb" src={resolveApiUrl(col.image)} alt={col.name} loading="lazy" />
 					<div>
 						<strong>{col.name}</strong>
 						<p>{col.tagline}</p>

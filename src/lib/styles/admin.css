@@ -7,8 +7,38 @@
 	--adm-sidebar-text: #9ca3b8;
 	--adm-sidebar-text-active: #f4f6fb;
 	--adm-accent: #6366f1;
-	--adm-accent-soft: rgb(99 102 241 / 0.12);
+	--adm-accent-soft: rgb(99 102 241 / 0.16);
 	--adm-accent-glow: rgb(99 102 241 / 0.35);
+	/* Default = dark theme */
+	--adm-bg: #0b0d13;
+	--adm-surface: #151823;
+	--adm-surface-2: #1c2030;
+	--adm-text: #e6e9f2;
+	--adm-muted: #8b91a4;
+	--adm-border: #262b3a;
+	--adm-success: #34d399;
+	--adm-success-bg: rgb(52 211 153 / 0.15);
+	--adm-warning: #fbbf24;
+	--adm-warning-bg: rgb(251 191 36 / 0.15);
+	--adm-danger: #f87171;
+	--adm-danger-bg: rgb(248 113 113 / 0.15);
+	--adm-info: #60a5fa;
+	--adm-info-bg: rgb(96 165 250 / 0.15);
+	--adm-radius: 12px;
+	--adm-radius-sm: 8px;
+	--adm-shadow: 0 1px 3px rgb(0 0 0 / 0.4);
+	--adm-shadow-lg: 0 16px 48px rgb(0 0 0 / 0.55);
+	--adm-sidebar-w: 15.5rem;
+	--adm-topbar-h: 3.75rem;
+	min-height: 100vh;
+	background: var(--adm-bg);
+	color: var(--adm-text);
+	font-family: var(--font, system-ui, sans-serif);
+}
+
+/* Light theme override */
+.adm-app[data-theme='light'] {
+	--adm-accent-soft: rgb(99 102 241 / 0.12);
 	--adm-bg: #f0f2f8;
 	--adm-surface: #ffffff;
 	--adm-surface-2: #f8f9fc;
@@ -23,16 +53,8 @@
 	--adm-danger-bg: #fef2f2;
 	--adm-info: #2563eb;
 	--adm-info-bg: #eff6ff;
-	--adm-radius: 12px;
-	--adm-radius-sm: 8px;
 	--adm-shadow: 0 1px 3px rgb(15 23 42 / 0.06);
 	--adm-shadow-lg: 0 12px 40px rgb(15 23 42 / 0.1);
-	--adm-sidebar-w: 15.5rem;
-	--adm-topbar-h: 3.75rem;
-	min-height: 100vh;
-	background: var(--adm-bg);
-	color: var(--adm-text);
-	font-family: var(--font, system-ui, sans-serif);
 }
 
 .adm-shell {
@@ -668,54 +690,83 @@
 }
 
 .adm-form-field {
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
 	margin-bottom: 1rem;
 }
 
-.adm-form-field label {
+.adm-form-grid .adm-form-field {
+	margin-bottom: 0;
+}
+
+.adm-form-field label,
+.adm-form-field > .adm-form-checks-label {
 	display: block;
-	margin-bottom: 0.375rem;
-	font-size: 0.8125rem;
-	font-weight: 600;
+	margin-bottom: 0.4rem;
+	font-size: 0.72rem;
+	font-weight: 700;
+	letter-spacing: 0.03em;
+	text-transform: uppercase;
 	color: var(--adm-muted);
 }
 
-.adm-form-field input {
-	width: 100%;
-	padding: 0.75rem 1rem;
-	border: 1px solid var(--adm-border);
-	border-radius: var(--adm-radius-sm);
-	font-size: 0.9375rem;
-	background: var(--adm-surface);
-}
-
-.adm-form-field input:focus {
-	outline: none;
-	border-color: var(--adm-accent);
-	box-shadow: 0 0 0 3px var(--adm-accent-soft);
-}
-
+.adm-form-field input,
 .adm-form-field select,
 .adm-form-field textarea {
 	width: 100%;
-	padding: 0.75rem 1rem;
+	padding: 0.65rem 0.85rem;
 	border: 1px solid var(--adm-border);
-	border-radius: var(--adm-radius-sm);
+	border-radius: 10px;
 	font-size: 0.9375rem;
-	background: var(--adm-surface);
 	font-family: inherit;
+	color: var(--adm-text);
+	background: var(--adm-surface-2);
+	transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
 }
 
+.adm-form-field textarea {
+	resize: vertical;
+	min-height: 5rem;
+}
+
+.adm-form-field input::placeholder,
+.adm-form-field textarea::placeholder {
+	color: var(--adm-muted);
+	opacity: 0.7;
+}
+
+.adm-form-field input:hover,
+.adm-form-field select:hover,
+.adm-form-field textarea:hover {
+	border-color: color-mix(in srgb, var(--adm-accent) 40%, var(--adm-border));
+}
+
+.adm-form-field input:focus,
 .adm-form-field select:focus,
 .adm-form-field textarea:focus {
 	outline: none;
+	background: var(--adm-surface);
 	border-color: var(--adm-accent);
 	box-shadow: 0 0 0 3px var(--adm-accent-soft);
+}
+
+.adm-field-hint {
+	margin: 0.4rem 0 0;
+	font-size: 0.75rem;
+	line-height: 1.4;
+	color: var(--adm-muted);
+}
+
+.adm-hint-sale {
+	color: var(--adm-success);
+	font-weight: 600;
 }
 
 .adm-form-grid {
 	display: grid;
 	grid-template-columns: repeat(2, 1fr);
-	gap: 0 1rem;
+	gap: 1.15rem 1.25rem;
 }
 
 .adm-form-span-2 {
@@ -723,17 +774,21 @@
 }
 
 .adm-form-checks {
-	display: flex;
-	flex-direction: column;
-	gap: 0.5rem;
+	gap: 0;
 }
 
 .adm-form-checks-label {
 	display: block;
-	margin-bottom: 0.25rem;
-	font-size: 0.8125rem;
-	font-weight: 600;
+	margin-bottom: 0.4rem;
+	font-size: 0.72rem;
+	font-weight: 700;
+	letter-spacing: 0.03em;
+	text-transform: uppercase;
 	color: var(--adm-muted);
+}
+
+.adm-form-checks .adm-check + .adm-check {
+	margin-top: 0.5rem;
 }
 
 .adm-check {
@@ -743,6 +798,14 @@
 	font-size: 0.875rem;
 	font-weight: 500;
 	color: var(--adm-text);
+	cursor: pointer;
+}
+
+.adm-check input[type='checkbox'] {
+	width: 1.1rem;
+	height: 1.1rem;
+	accent-color: var(--adm-accent);
+	cursor: pointer;
 }
 
 .adm-form-preview {

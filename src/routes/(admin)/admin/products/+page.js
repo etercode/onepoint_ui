@@ -1,11 +1,14 @@
-import { getProducts } from '$lib/api/client';
+import { getCategories, getProducts } from '$lib/api/client';
 
 export async function load() {
 	try {
-		const { items } = await getProducts();
-		return { products: items ?? [] };
+		const [productsRes, categoriesRes] = await Promise.all([
+			getProducts({ limit: 100, sort: 'newest' }),
+			getCategories().catch(() => ({ items: [] }))
+		]);
+		return { products: productsRes?.items ?? [], categories: categoriesRes?.items ?? [] };
 	} catch (e) {
 		console.error('Admin products: failed to load', e);
-		return { products: [], apiUnavailable: true };
+		return { products: [], categories: [], apiUnavailable: true };
 	}
 }

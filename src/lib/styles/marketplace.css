@@ -98,8 +98,16 @@
 	color: var(--mp-primary);
 }
 
-.mp-header .mp-catalog-menu {
+.mp-header .mp-catalog-menu,
+.mp-header .mega {
 	grid-area: catalog;
+}
+
+.mp-header .sb {
+	grid-area: search;
+	justify-self: center;
+	max-width: 36rem;
+	width: 100%;
 }
 
 .mp-logo {
@@ -1287,7 +1295,8 @@
 		font-size: 0.8125rem;
 	}
 
-	.mp-search {
+	.mp-search,
+	.mp-header .sb {
 		max-width: none;
 		justify-self: stretch;
 	}

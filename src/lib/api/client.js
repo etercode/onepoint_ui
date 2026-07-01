@@ -246,6 +246,17 @@ export async function getCollection(slug) {
 	return request(`/api/collections/${slug}`);
 }
 
+/** Catalog mega-menu content (editable text + random promo products). */
+export async function getCatalogMenu() {
+	return request('/api/catalog-menu');
+}
+
+/** @param {string} q @param {number} [limit] Typo-tolerant search suggestions. */
+export async function searchSuggest(q, limit = 6) {
+	const params = new URLSearchParams({ q, limit: String(limit) });
+	return request(`/api/search/suggest?${params}`);
+}
+
 // ——— Admin catalog (requires ROLE_ADMIN) ———
 
 /** @param {Record<string, unknown>} data */
@@ -267,6 +278,14 @@ export async function updateProduct(id, data) {
 /** @param {number | string} id */
 export async function deleteProduct(id) {
 	return request(`/api/admin/products/${id}`, { method: 'DELETE' }, true);
+}
+
+/** Partial update for inline list toggles (stock / new). @param {number | string} id @param {Record<string, unknown>} data */
+export async function patchProduct(id, data) {
+	return request(`/api/admin/products/${id}`, {
+		method: 'PATCH',
+		body: JSON.stringify(data)
+	}, true);
 }
 
 /** @param {number | string} id @param {File} file */
@@ -323,6 +342,46 @@ export async function deleteCategory(id) {
 	return request(`/api/admin/categories/${id}`, { method: 'DELETE' }, true);
 }
 
+/** @param {number | string} id @param {File} file */
+export async function uploadCategoryImage(id, file) {
+	const form = new FormData();
+	form.append('image', file);
+	return request(`/api/admin/categories/${id}/image`, {
+		method: 'POST',
+		body: form
+	}, true);
+}
+
+// ——— Category spec attributes (requires ROLE_ADMIN) ———
+
+/** @param {number | string} categoryId */
+export async function getCategoryAttributes(categoryId) {
+	return request(`/api/admin/categories/${categoryId}/attributes`, {}, true);
+}
+
+/** @param {number | string} categoryId @param {Record<string, unknown>} data */
+export async function createCategoryAttribute(categoryId, data) {
+	return request(`/api/admin/categories/${categoryId}/attributes`, {
+		method: 'POST',
+		body: JSON.stringify(data)
+	}, true);
+}
+
+/** @param {number | string} categoryId @param {number | string} attrId @param {Record<string, unknown>} data */
+export async function updateCategoryAttribute(categoryId, attrId, data) {
+	return request(`/api/admin/categories/${categoryId}/attributes/${attrId}`, {
+		method: 'PUT',
+		body: JSON.stringify(data)
+	}, true);
+}
+
+/** @param {number | string} categoryId @param {number | string} attrId */
+export async function deleteCategoryAttribute(categoryId, attrId) {
+	return request(`/api/admin/categories/${categoryId}/attributes/${attrId}`, {
+		method: 'DELETE'
+	}, true);
+}
+
 /** @param {Record<string, unknown>} data */
 export async function createCollection(data) {
 	return request('/api/admin/collections', {
@@ -342,6 +401,16 @@ export async function updateCollection(id, data) {
 /** @param {number | string} id */
 export async function deleteCollection(id) {
 	return request(`/api/admin/collections/${id}`, { method: 'DELETE' }, true);
+}
+
+/** @param {number | string} id @param {File} file */
+export async function uploadCollectionImage(id, file) {
+	const form = new FormData();
+	form.append('image', file);
+	return request(`/api/admin/collections/${id}/image`, {
+		method: 'POST',
+		body: form
+	}, true);
 }
 
 // ——— Public consultations ———
@@ -404,4 +473,18 @@ export async function updateConsultationStatus(id, status) {
 
 export async function getDashboard() {
 	return request('/api/admin/dashboard', {}, true);
+}
+
+// ——— Admin catalog mega-menu content ———
+
+export async function getAdminCatalogMenu() {
+	return request('/api/admin/catalog-menu', {}, true);
+}
+
+/** @param {Record<string, unknown>} data */
+export async function updateCatalogMenu(data) {
+	return request('/api/admin/catalog-menu', {
+		method: 'PUT',
+		body: JSON.stringify(data)
+	}, true);
 }

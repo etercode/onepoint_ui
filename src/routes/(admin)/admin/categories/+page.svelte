@@ -1,11 +1,43 @@
 <script>
 	import { invalidateAll } from '$app/navigation';
-	import { createCategory, deleteCategory, updateCategory } from '$lib/api/client';
+	import { createCategory, deleteCategory, updateCategory, uploadCategoryImage } from '$lib/api/client';
 	import { formatAdminError } from '$lib/admin/api-errors';
 	import { formatPrice } from '$lib/data/marketplace';
 	import { resolveApiUrl } from '$lib/config';
+	import CategoryAttributeEditor from '$lib/components/admin/CategoryAttributeEditor.svelte';
+	import ImageCropper from '$lib/components/ImageCropper.svelte';
 
 	let { data } = $props();
+
+	let attributesFor = $state(/** @type {Record<string, any> | null} */ (null));
+
+	// Image upload + crop staging (4:3 category image).
+	let cropFile = $state(/** @type {File | null} */ (null));
+	let croppedFile = $state(/** @type {File | null} */ (null));
+	let croppedPreview = $state('');
+
+	/** @param {Event} event */
+	function handleImageSelect(event) {
+		const input = /** @type {HTMLInputElement} */ (event.currentTarget);
+		const file = input.files?.[0];
+		input.value = '';
+		if (file) cropFile = file;
+	}
+
+	/** @param {File} file */
+	function onCropConfirm(file) {
+		croppedFile = file;
+		if (croppedPreview) URL.revokeObjectURL(croppedPreview);
+		croppedPreview = URL.createObjectURL(file);
+		cropFile = null;
+	}
+
+	function clearStagedImage() {
+		if (croppedPreview) URL.revokeObjectURL(croppedPreview);
+		croppedFile = null;
+		croppedPreview = '';
+		cropFile = null;
+	}
 
 	let error = $state('');
 	let saving = $state(false);
@@ -20,6 +52,7 @@
 	function openCreate() {
 		editing = null;
 		form = { name: '', image: '', sortOrder: String(categories.length) };
+		clearStagedImage();
 		showForm = true;
 		error = '';
 	}
@@ -32,6 +65,7 @@
 			image: String(cat.image ?? ''),
 			sortOrder: String(cat.sortOrder ?? 0)
 		};
+		clearStagedImage();
 		showForm = true;
 		error = '';
 	}
@@ -39,6 +73,7 @@
 	function closeForm() {
 		showForm = false;
 		editing = null;
+		clearStagedImage();
 	}
 
 	function buildPayload() {
@@ -60,10 +95,13 @@
 		saving = true;
 		try {
 			const payload = buildPayload();
-			if (editing?.id != null) {
-				await updateCategory(editing.id, payload);
-			} else {
-				await createCategory(payload);
+			const saved = editing?.id != null
+				? await updateCategory(editing.id, payload)
+				: await createCategory(payload);
+
+			// Upload the cropped image (if any) once the category exists.
+			if (croppedFile && saved?.id != null) {
+				await uploadCategoryImage(saved.id, croppedFile);
 			}
 			closeForm();
 			await invalidateAll();
@@ -126,8 +164,33 @@
 					<input id="cat-name" type="text" required bind:value={form.name} />
 				</div>
 				<div class="adm-form-field adm-form-span-2">
-					<label for="cat-image">Şəkil URL</label>
-					<input id="cat-image" type="text" bind:value={form.image} />
+					<span class="adm-form-checks-label">Şəkil</span>
+					<div class="adm-cat-image">
+						<div class="adm-cat-image-preview">
+							{#if croppedPreview}
+								<img src={croppedPreview} alt="" />
+							{:else if form.image}
+								<img src={resolveApiUrl(form.image)} alt="" />
+							{:else}
+								<span class="adm-cat-image-empty">Şəkil yoxdur</span>
+							{/if}
+						</div>
+						<div class="adm-cat-image-controls">
+							<label class="adm-btn adm-btn-ghost adm-file-btn">
+								Şəkil seç və kəs
+								<input type="file" accept="image/*" onchange={handleImageSelect} hidden />
+							</label>
+							{#if croppedFile}
+								<button type="button" class="adm-btn adm-btn-ghost adm-btn-danger" onclick={clearStagedImage}>Ləğv et</button>
+							{/if}
+							<input
+								type="text"
+								class="adm-filter-input"
+								placeholder="və ya şəkil URL-i yapışdırın"
+								bind:value={form.image}
+							/>
+						</div>
+					</div>
 				</div>
 				<div class="adm-form-field">
 					<label for="cat-sort">Sıra</label>
@@ -141,6 +204,14 @@
 			</div>
 		</div>
 	</section>
+{/if}
+
+{#if attributesFor}
+	<CategoryAttributeEditor
+		categoryId={attributesFor.id}
+		categoryName={attributesFor.name}
+		onClose={() => (attributesFor = null)}
+	/>
 {/if}
 
 <section class="adm-panel">
@@ -170,6 +241,7 @@
 						<td>{cat.priceFrom != null ? formatPrice(cat.priceFrom) : '—'}</td>
 						<td>{cat.sortOrder ?? 0}</td>
 						<td class="adm-table-actions">
+							<button type="button" class="adm-btn adm-btn-ghost" onclick={() => (attributesFor = cat)}>Xüsusiyyətlər</button>
 							<button type="button" class="adm-btn adm-btn-ghost" onclick={() => openEdit(cat)}>Redaktə</button>
 							<button
 								type="button"
@@ -190,3 +262,64 @@
 		</table>
 	</div>
 </section>
+
+{#if cropFile}
+	<ImageCropper
+		file={cropFile}
+		shape="rect"
+		aspect={4 / 3}
+		output={800}
+		title="Kateqoriya şəklini kəs"
+		subtitle="Yerini dəyişmək üçün sürükləyin · böyütmək üçün zoom"
+		onConfirm={onCropConfirm}
+		onCancel={() => (cropFile = null)}
+	/>
+{/if}
+
+<style>
+	.adm-cat-image {
+		display: flex;
+		gap: 1rem;
+		align-items: flex-start;
+	}
+
+	.adm-cat-image-preview {
+		flex: 0 0 8rem;
+		width: 8rem;
+		aspect-ratio: 4 / 3;
+		border: 1px solid var(--adm-border);
+		border-radius: var(--adm-radius-sm);
+		background: var(--adm-surface-2);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		overflow: hidden;
+	}
+
+	.adm-cat-image-preview img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+
+	.adm-cat-image-empty {
+		font-size: 0.75rem;
+		color: var(--adm-muted);
+	}
+
+	.adm-cat-image-controls {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+		align-items: flex-start;
+	}
+
+	.adm-cat-image-controls .adm-filter-input {
+		width: 100%;
+	}
+
+	.adm-file-btn {
+		cursor: pointer;
+	}
+</style>

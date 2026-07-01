@@ -1,9 +1,34 @@
 <script>
-	let { file, onConfirm, onCancel } = $props();
+	/**
+	 * @type {{
+	 *   file: File,
+	 *   onConfirm: (file: File) => void,
+	 *   onCancel: () => void,
+	 *   shape?: 'circle' | 'rect',
+	 *   aspect?: number,
+	 *   output?: number,
+	 *   title?: string,
+	 *   subtitle?: string
+	 * }}
+	 */
+	let {
+		file,
+		onConfirm,
+		onCancel,
+		shape = 'circle',
+		aspect = 1,
+		output = 512,
+		title = 'Şəkli redaktə et',
+		subtitle = 'Yerini dəyişmək üçün sürükləyin · böyütmək üçün zoom'
+	} = $props();
 
 	const VIEWPORT = 300;
-	const CROP_SIZE = 240;
-	const OUTPUT = 512;
+	const MAX_CROP = 260;
+	// Crop box fitted into the square viewport for the requested aspect ratio.
+	let CROP_W = $derived(aspect >= 1 ? MAX_CROP : MAX_CROP * aspect);
+	let CROP_H = $derived(aspect >= 1 ? MAX_CROP / aspect : MAX_CROP);
+	let OUT_W = $derived(output);
+	let OUT_H = $derived(Math.round(output / aspect));
 
 	let canvasEl = $state(/** @type {HTMLCanvasElement | undefined} */ (undefined));
 	let image = $state(/** @type {HTMLImageElement | null} */ (null));
@@ -36,8 +61,8 @@
 
 	function resetTransform() {
 		if (!image) return;
-		const scaleX = CROP_SIZE / image.width;
-		const scaleY = CROP_SIZE / image.height;
+		const scaleX = CROP_W / image.width;
+		const scaleY = CROP_H / image.height;
 		minZoom = Math.max(scaleX, scaleY);
 		zoom = minZoom * 1.1;
 		panX = 0;
@@ -63,16 +88,32 @@
 		const y = VIEWPORT / 2 - drawH / 2 + panY;
 		ctx.drawImage(image, x, y, drawW, drawH);
 
+		const cropX = VIEWPORT / 2 - CROP_W / 2;
+		const cropY = VIEWPORT / 2 - CROP_H / 2;
+
 		ctx.fillStyle = 'rgba(0,0,0,0.55)';
 		ctx.beginPath();
 		ctx.rect(0, 0, VIEWPORT, VIEWPORT);
-		ctx.arc(VIEWPORT / 2, VIEWPORT / 2, CROP_SIZE / 2, 0, Math.PI * 2, true);
+		if (shape === 'circle') {
+			ctx.arc(VIEWPORT / 2, VIEWPORT / 2, CROP_W / 2, 0, Math.PI * 2, true);
+		} else {
+			// Reverse-wound rectangle to punch the hole with evenodd.
+			ctx.moveTo(cropX, cropY);
+			ctx.lineTo(cropX, cropY + CROP_H);
+			ctx.lineTo(cropX + CROP_W, cropY + CROP_H);
+			ctx.lineTo(cropX + CROP_W, cropY);
+			ctx.closePath();
+		}
 		ctx.fill('evenodd');
 
 		ctx.strokeStyle = 'rgba(255,255,255,0.9)';
 		ctx.lineWidth = 2;
 		ctx.beginPath();
-		ctx.arc(VIEWPORT / 2, VIEWPORT / 2, CROP_SIZE / 2, 0, Math.PI * 2);
+		if (shape === 'circle') {
+			ctx.arc(VIEWPORT / 2, VIEWPORT / 2, CROP_W / 2, 0, Math.PI * 2);
+		} else {
+			ctx.rect(cropX, cropY, CROP_W, CROP_H);
+		}
 		ctx.stroke();
 	}
 
@@ -80,8 +121,8 @@
 		if (!image) return;
 		const drawW = image.width * zoom;
 		const drawH = image.height * zoom;
-		const maxPanX = Math.max(0, (drawW - CROP_SIZE) / 2);
-		const maxPanY = Math.max(0, (drawH - CROP_SIZE) / 2);
+		const maxPanX = Math.max(0, (drawW - CROP_W) / 2);
+		const maxPanY = Math.max(0, (drawH - CROP_H) / 2);
 		panX = Math.min(maxPanX, Math.max(-maxPanX, panX));
 		panY = Math.min(maxPanY, Math.max(-maxPanY, panY));
 	}
@@ -124,8 +165,8 @@
 			}
 
 			const out = document.createElement('canvas');
-			out.width = OUTPUT;
-			out.height = OUTPUT;
+			out.width = OUT_W;
+			out.height = OUT_H;
 			const ctx = out.getContext('2d');
 			if (!ctx) {
 				reject(new Error('Canvas unavailable'));
@@ -136,24 +177,25 @@
 			const drawH = image.height * zoom;
 			const imgX = VIEWPORT / 2 - drawW / 2 + panX;
 			const imgY = VIEWPORT / 2 - drawH / 2 + panY;
-			const cropX = VIEWPORT / 2 - CROP_SIZE / 2;
-			const cropY = VIEWPORT / 2 - CROP_SIZE / 2;
-			const ratio = OUTPUT / CROP_SIZE;
+			const cropX = VIEWPORT / 2 - CROP_W / 2;
+			const cropY = VIEWPORT / 2 - CROP_H / 2;
 
-			ctx.beginPath();
-			ctx.arc(OUTPUT / 2, OUTPUT / 2, OUTPUT / 2, 0, Math.PI * 2);
-			ctx.clip();
+			if (shape === 'circle') {
+				ctx.beginPath();
+				ctx.arc(OUT_W / 2, OUT_H / 2, Math.min(OUT_W, OUT_H) / 2, 0, Math.PI * 2);
+				ctx.clip();
+			}
 
 			ctx.drawImage(
 				image,
 				(cropX - imgX) / zoom,
 				(cropY - imgY) / zoom,
-				CROP_SIZE / zoom,
-				CROP_SIZE / zoom,
+				CROP_W / zoom,
+				CROP_H / zoom,
 				0,
 				0,
-				OUTPUT,
-				OUTPUT
+				OUT_W,
+				OUT_H
 			);
 
 			out.toBlob(
@@ -169,7 +211,7 @@
 
 	async function handleConfirm() {
 		const blob = await exportBlob();
-		const cropped = new File([blob], 'profile.webp', { type: 'image/webp' });
+		const cropped = new File([blob], 'image.webp', { type: 'image/webp' });
 		onConfirm(cropped);
 	}
 </script>
@@ -177,8 +219,8 @@
 <div class="cropper-backdrop" role="presentation" onclick={(e) => e.target === e.currentTarget && onCancel()}>
 	<div class="cropper-modal" role="dialog" aria-labelledby="cropper-title" aria-modal="true">
 		<header class="cropper-header">
-			<h2 id="cropper-title">Edit photo</h2>
-			<p>Drag to reposition · use zoom to adjust</p>
+			<h2 id="cropper-title">{title}</h2>
+			<p>{subtitle}</p>
 		</header>
 
 		<div
@@ -207,8 +249,8 @@
 		</div>
 
 		<footer class="cropper-actions">
-			<button type="button" class="btn btn-ghost" onclick={onCancel}>Cancel</button>
-			<button type="button" class="btn" onclick={handleConfirm}>Save photo</button>
+			<button type="button" class="btn btn-ghost" onclick={onCancel}>Ləğv et</button>
+			<button type="button" class="btn" onclick={handleConfirm}>Yadda saxla</button>
 		</footer>
 	</div>
 </div>

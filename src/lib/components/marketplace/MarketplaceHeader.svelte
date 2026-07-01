@@ -7,8 +7,9 @@
 	import BackButton from '$lib/components/marketplace/BackButton.svelte';
 	import CartButton from '$lib/components/marketplace/CartButton.svelte';
 	import CatalogMenu from '$lib/components/marketplace/CatalogMenu.svelte';
+	import SearchBox from '$lib/components/marketplace/SearchBox.svelte';
 
-	let { categories = [], collections = [], onLogout = async () => {} } = $props();
+	let { categories = [], collections = [], catalogMenu = null, onLogout = async () => {} } = $props();
 
 	let catalogOpen = $state(false);
 
@@ -34,16 +35,9 @@
 				</span>
 			</a>
 
-			<CatalogMenu {categories} {collections} bind:open={catalogOpen} />
+			<CatalogMenu {categories} {collections} {catalogMenu} bind:open={catalogOpen} />
 
-			<form class="mp-search" role="search" action="/search" method="get">
-				<svg class="mp-search-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-				<input type="search" name="q" placeholder="Kataloqda axtar…" aria-label="Məhsul axtar" />
-				<button type="submit" class="mp-search-btn" aria-label="Axtar">
-					<span class="mp-search-btn-label">Axtar</span>
-					<svg class="mp-search-btn-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-				</button>
-			</form>
+			<SearchBox />
 
 			<div class="mp-header-actions">
 				<CartButton />

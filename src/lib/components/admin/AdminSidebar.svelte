@@ -4,10 +4,7 @@
 	const nav = [
 		{
 			label: 'Əsas',
-			items: [
-				{ href: '/admin', label: 'İdarə paneli', icon: 'dashboard', exact: true },
-				{ href: '/admin/analytics', label: 'Analitika', icon: 'chart' }
-			]
+			items: [{ href: '/admin', label: 'İdarə paneli', icon: 'dashboard', exact: true }]
 		},
 		{
 			label: 'Ticarət',
